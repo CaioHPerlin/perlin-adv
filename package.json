@@ -1,0 +1,7 @@
+{
+  "name": "perlin-adv",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ]
+}
