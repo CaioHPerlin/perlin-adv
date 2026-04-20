@@ -12,6 +12,7 @@ function getSchemaDefaults<T extends TSchema>(schema: T): T['static'] {
 const EnvSchema = t.Object(
 	{
 		PORT: t.Numeric({ default: 7777 }),
+		DATABASE_URL: t.String(),
 		NODE_ENV: t.Union(
 			[
 				t.Literal('development'),
