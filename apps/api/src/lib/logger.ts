@@ -1,6 +1,26 @@
 import { logger as ElysiaLogger } from '@bogeychan/elysia-logger';
 import { config } from '../common/config';
 
-export const logger = ElysiaLogger({
-	level: config.LOG_LEVEL,
-});
+type LoggerOptions = Parameters<typeof ElysiaLogger>[0];
+
+const envToLoggerConfig: Record<typeof config.NODE_ENV, LoggerOptions> = {
+	production: {
+		autoLogging: true,
+		useLevel: config.LOG_LEVEL,
+	},
+	development: {
+		autoLogging: true,
+		transport: {
+			target: 'pino-pretty',
+			options: {
+				translateTime: 'HH:MM:ss Z',
+				ignore: 'pid,hostname',
+			},
+		},
+	},
+	test: {
+		autoLogging: false,
+	},
+};
+
+export const logger = ElysiaLogger(envToLoggerConfig[config.NODE_ENV]);
