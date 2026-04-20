@@ -1,10 +1,8 @@
 import { Elysia } from 'elysia';
-import { config } from './config';
+import { config } from './common/config';
+import { logger } from './lib/logger';
 
-const app = new Elysia()
-  .decorate('config', config)
-  .get('/', () => 'Hello Elysia')
-  .listen(config.PORT);
+const app = new Elysia().use(logger).listen(config.PORT);
 
 if (app.server) {
   const { hostname, port } = app.server;

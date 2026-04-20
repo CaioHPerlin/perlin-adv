@@ -9,6 +9,17 @@ function getSchemaDefaults<T extends TSchema>(schema: T): T['static'] {
 const EnvSchema = t.Object(
   {
     PORT: t.Numeric({ default: 7777 }),
+    LOG_LEVEL: t.Union(
+      [
+        t.Literal('fatal'),
+        t.Literal('error'),
+        t.Literal('warn'),
+        t.Literal('info'),
+        t.Literal('debug'),
+        t.Literal('trace'),
+      ],
+      { default: 'info' },
+    ),
   },
   { additionalProperties: true },
 );
