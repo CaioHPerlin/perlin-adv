@@ -1,15 +1,18 @@
 {
-  "name": "@perlin-adv/api",
-  "private": true,
-  "scripts": {
-    "dev": "bun run --watch src/index.ts"
-  },
-  "dependencies": {
-    "@bogeychan/elysia-logger": "^0.1.10",
-    "elysia": "latest"
-  },
-  "devDependencies": {
-    "bun-types": "latest"
-  },
-  "module": "src/index.js"
+	"name": "@perlin-adv/api",
+	"private": true,
+	"scripts": {
+		"dev": "bun run --watch src/index.ts",
+		"format": "prettier --write src"
+	},
+	"dependencies": {
+		"@bogeychan/elysia-logger": "^0.1.10",
+		"@elysiajs/openapi": "^1.4.14",
+		"elysia": "latest"
+	},
+	"devDependencies": {
+		"bun-types": "latest",
+		"prettier": "^3.8.3"
+	},
+	"module": "src/index.js"
 }
