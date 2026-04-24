@@ -3,10 +3,13 @@ import Elysia from 'elysia';
 import { logger } from '../../lib/logger';
 import { AuthDto } from './auth.dto';
 import { AuthService } from './auth.service';
+import { EmailService } from './email.service';
 
 export const AuthController = new Elysia({ prefix: '/auth', tags: ['Auth'] })
   .use(logger)
-  .derive(({ log }) => ({ service: new AuthService(log, redis) }))
+  .derive(({ log }) => ({
+    service: new AuthService(redis, new EmailService(log)),
+  }))
   .post(
     '/send-otp',
     async ({ body: { email }, service }) => {

@@ -1,12 +1,12 @@
-import { Logger } from '@bogeychan/elysia-logger/types';
 import { AuthDto } from './auth.dto';
+import { EmailService } from './email.service';
 
 export class AuthService {
   private readonly OTP_EXPIRATION_SECONDS = 60 * 5;
 
   constructor(
-    private readonly log: Logger,
     private readonly redisClient: Bun.RedisClient,
+    private readonly emailService: EmailService,
   ) {}
 
   private generateOtp(): string {
@@ -17,7 +17,6 @@ export class AuthService {
   }
 
   private async storeOtp(email: string, otp: string) {
-    this.log.debug(`Stored OTP ${otp} for email ${email}`);
     const key = `otp:${email}`;
     return this.redisClient.set(key, otp, 'EX', this.OTP_EXPIRATION_SECONDS);
   }
@@ -30,13 +29,17 @@ export class AuthService {
 
   async sendOtp(email: string): Promise<AuthDto['sendOtpResponse']> {
     const otp = this.generateOtp();
-    const storeResult = await this.storeOtp(email, otp);
 
+    const storeResult = await this.storeOtp(email, otp);
     if (storeResult !== 'OK') {
       throw new Error('Failed to store OTP');
     }
 
-    // @TODO: Integrate with email service to send the OTP to the user's email
+    const isEmailSent = await this.emailService.sendOtp(email, otp);
+    if (!isEmailSent) {
+      throw new Error('Failed to send OTP email');
+    }
+
     return {
       success: true,
       message: 'OTP sent successfully',
