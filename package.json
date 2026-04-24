@@ -3,5 +3,11 @@
   "private": true,
   "workspaces": [
     "apps/*"
-  ]
+  ],
+  "scripts": {
+    "format": "prettier --write . && bun --filter '*' format"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.3"
+  }
 }

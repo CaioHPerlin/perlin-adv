@@ -1,69 +1,65 @@
 import { getSchemaValidator, t, TSchema } from 'elysia';
 
 function getSchemaDefaults<T extends TSchema>(schema: T): T['static'] {
-	return Object.fromEntries(
-		Object.entries(schema.properties).map(([key, sch]: [string, any]) => [
-			key,
-			sch.default,
-		]),
-	);
+  return Object.fromEntries(
+    Object.entries(schema.properties).map(([key, sch]: [string, any]) => [
+      key,
+      sch.default,
+    ]),
+  );
 }
 
 const EnvSchema = t.Object(
-	{
-		PORT: t.Numeric({ default: 7777 }),
-		DATABASE_URL: t.String(),
-		NODE_ENV: t.Union(
-			[
-				t.Literal('development'),
-				t.Literal('production'),
-				t.Literal('test'),
-			],
-			{ default: 'development' },
-		),
-		LOG_LEVEL: t.Union(
-			[
-				t.Literal('fatal'),
-				t.Literal('error'),
-				t.Literal('warn'),
-				t.Literal('info'),
-				t.Literal('debug'),
-				t.Literal('trace'),
-			],
-			{ default: 'info' },
-		),
-	},
-	{ additionalProperties: true },
+  {
+    PORT: t.Numeric({ default: 7777 }),
+    DATABASE_URL: t.String(),
+    NODE_ENV: t.Union(
+      [t.Literal('development'), t.Literal('production'), t.Literal('test')],
+      { default: 'development' },
+    ),
+    LOG_LEVEL: t.Union(
+      [
+        t.Literal('fatal'),
+        t.Literal('error'),
+        t.Literal('warn'),
+        t.Literal('info'),
+        t.Literal('debug'),
+        t.Literal('trace'),
+      ],
+      { default: 'info' },
+    ),
+  },
+  { additionalProperties: true },
 );
 
 const validator = getSchemaValidator(EnvSchema);
 const envDefaults = getSchemaDefaults(EnvSchema);
 
 function validateEnv(env: Record<string, any>): typeof EnvSchema.static {
-	const result = validator.safeParse(env);
+  const result = validator.safeParse(env);
 
-	if (!result.success) {
-		console.error('❌ Invalid environment variables');
-		console.error('--------------------------------');
+  if (!result.success) {
+    console.error('❌ Invalid environment variables');
+    console.error('--------------------------------');
 
-		const errorsDict = result.errors.reduce(
-			(acc, error) => {
-				if (!error) return acc;
-				const path = error.path.substring(1);
-				(acc[path] ??= []).push(error.message);
-				return acc;
-			},
-			{} as Record<string, string[]>,
-		);
+    const errorsDict = result.errors.reduce(
+      (acc, error) => {
+        if (!error) return acc;
+        const path = error.path.substring(1);
+        (acc[path] ??= []).push(error.message);
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    );
 
-		for (const [key, messages] of Object.entries(errorsDict)) {
-			console.error(`🔴 ${key}: ${messages.join(', ')}`);
-		}
+    for (const [key, messages] of Object.entries(errorsDict)) {
+      console.error(`🔴 ${key}: ${messages.join(', ')}`);
+    }
 
-		process.exit(1);
-	}
+    process.exit(1);
+  }
 
-	return result.data;
+  return result.data;
 }
 
 export const config = validateEnv({ ...envDefaults, ...Bun.env });

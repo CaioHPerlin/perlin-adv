@@ -4,6 +4,9 @@
   "workspaces": {
     "": {
       "name": "perlin-adv",
+      "devDependencies": {
+        "prettier": "^3.8.3",
+      },
     },
     "apps/api": {
       "name": "@perlin-adv/api",

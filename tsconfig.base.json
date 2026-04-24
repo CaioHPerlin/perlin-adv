@@ -1,19 +1,19 @@
 {
-	"compilerOptions": {
-		"lib": ["ESNext"],
-		"target": "esnext",
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"allowJs": true,
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"verbatimModuleSyntax": false,
-		"module": "es2022",
-		"moduleDetection": "force",
-		"strict": true,
-		"noUncheckedIndexedAccess": true,
-		"noImplicitOverride": true
-	},
-	"include": ["**/*.ts", "**/*.tsx"],
-	"exclude": ["node_modules"]
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "target": "esnext",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": false,
+    "module": "es2022",
+    "moduleDetection": "force",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }
