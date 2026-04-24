@@ -16,3 +16,5 @@ if (app.server) {
   const { hostname, port } = app.server;
   console.log(`API Listening at ${hostname}:${port}`);
 }
+
+export type App = typeof app;
