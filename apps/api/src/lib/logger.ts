@@ -6,10 +6,11 @@ type LoggerOptions = Parameters<typeof ElysiaLogger>[0];
 const envToLoggerConfig: Record<typeof config.NODE_ENV, LoggerOptions> = {
   production: {
     autoLogging: true,
-    useLevel: config.LOG_LEVEL,
+    level: config.LOG_LEVEL,
   },
   development: {
     autoLogging: true,
+    level: 'trace',
     transport: {
       target: 'pino-pretty',
       options: {
