@@ -1,13 +1,16 @@
 import { t, UnwrapSchema } from 'elysia';
+import { DefaultResponse } from '../../common/dto';
 
 export const AuthDto = {
   sendOtp: t.Object({
-    email: t.String({ format: 'email' }),
+    email: t.String({ format: 'email', examples: ['caiohperlin@gmail.com'] }),
   }),
-  sendOtpResponse: t.Object({
-    success: t.Boolean(),
-    message: t.String(),
+  sendOtpResponse: DefaultResponse,
+  verifyOtp: t.Object({
+    email: t.String({ format: 'email', examples: ['caiohperlin@gmail.com'] }),
+    otp: t.String({ minLength: 6, maxLength: 6, examples: ['123456'] }),
   }),
+  verifyOtpResponse: DefaultResponse,
 };
 
 export type AuthDto = {
