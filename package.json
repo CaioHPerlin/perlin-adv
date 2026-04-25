@@ -5,7 +5,8 @@
     "apps/*"
   ],
   "scripts": {
-    "format": "prettier --write . && bun --filter '*' format"
+    "format": "prettier --write . && bun --filter '*' format",
+    "dev": "bun --filter '*' dev"
   },
   "devDependencies": {
     "prettier": "^3.8.3"

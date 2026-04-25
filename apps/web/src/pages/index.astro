@@ -1,7 +1,89 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import { Button } from '@/components/starwind/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/starwind/card';
+import { Input } from '@/components/starwind/input';
+import { Label } from '@/components/starwind/label';
+import Base from '@/layouts/Base.astro';
+import { server } from '@/lib/server';
+
+export const prerender = false;
+
+let errorMessage = '';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const email = data.get('email') as string;
+
+    const result = await server.v1.auth['send-otp'].post({ email });
+
+    if (result.error) {
+      console.error('Error sending OTP:', result.error);
+      errorMessage = 'Falha ao enviar o código. Tente novamente.';
+    } else {
+      console.log('OTP sent successfully:', result.data);
+      Astro.response.status = 200;
+      return Astro.response();
+      // return Astro.redirect('/auth/verify?email=' + encodeURIComponent(email));
+    }
+  } catch (e) {
+    console.error('Error sending OTP:', e);
+  }
+}
 ---
 
-<Layout>
-	<p>teste</p>
-</Layout>
+<Base>
+  <div class="flex w-full h-screen justify-center items-center">
+    <Card class="w-110 mx-4 md:mx-0">
+      <img
+        src="/assets/office-bg.jpg"
+        alt="Law Office Background"
+        class="h-46 w-full object-cover"
+      />
+      <CardHeader>
+        <CardTitle>
+          Boas vindas ao <strong class="text-primary">PerlinAdv</strong>
+        </CardTitle>
+        <CardDescription>
+          A plataforma jurídica feita para humanos.
+        </CardDescription>
+      </CardHeader>
+
+      <form method="post">
+        <CardContent class="flex flex-col gap-4">
+          <div class="flex w-full flex-col gap-2">
+            <Label for="email">E-mail de acesso</Label>
+            <Input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="voce@exemplo.com"
+              required
+            />
+            {
+              errorMessage && (
+                <p class="text-destructive text-sm">{errorMessage}</p>
+              )
+            }
+          </div>
+        </CardContent>
+        <CardFooter class="mt-6 flex flex-col justify-center">
+          <Button type="submit" variant="primary" class="w-full">
+            Enviar Código
+          </Button>
+          <p class="mt-6 text-center text-muted-foreground">
+            Criando uma conta, você concorda com todos os nossos
+            <a href="#terms" class="underline"> termos e condições. </a>
+          </p>
+        </CardFooter>
+      </form>
+    </Card>
+  </div>
+</Base>

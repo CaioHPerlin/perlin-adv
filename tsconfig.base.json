@@ -9,7 +9,6 @@
     "skipLibCheck": true,
     "allowJs": true,
     "jsx": "preserve",
-    "noEmit": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": false,
