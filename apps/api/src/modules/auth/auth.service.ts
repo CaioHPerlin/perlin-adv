@@ -33,16 +33,16 @@ export class AuthService {
 
     const storeResult = await this.storeOtp(email, otp);
     if (storeResult !== 'OK') {
-      throw new AppError('Failed to store OTP.');
+      throw new AppError('Falha ao armazenar o código OTP.');
     }
 
     const isEmailSent = await this.emailService.sendOtp(email, otp);
     if (!isEmailSent) {
-      throw new AppError('Failed to send OTP email.');
+      throw new AppError('Falha ao enviar o código OTP por e-mail.');
     }
 
     return {
-      message: 'OTP sent successfully',
+      message: 'Código OTP enviado com sucesso',
     };
   }
 
@@ -53,17 +53,17 @@ export class AuthService {
     const storedOtp = await this.getStoredOtp(email);
 
     if (!storedOtp) {
-      throw new BadRequestError('OTP expired or not found.');
+      throw new BadRequestError('Código expirado ou não encontrado.');
     }
 
     if (storedOtp !== otp) {
-      throw new BadRequestError('Invalid OTP.');
+      throw new BadRequestError('Código inválido.');
     }
 
     this.redisClient.del(`otp:${email}`);
 
     return {
-      message: 'OTP verified successfully',
+      message: 'Código verificado com sucesso',
     };
   }
 }
