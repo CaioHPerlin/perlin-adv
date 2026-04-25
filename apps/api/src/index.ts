@@ -6,7 +6,7 @@ import { AuthController } from '@/modules/auth/auth.controller';
 import { Elysia } from 'elysia';
 
 const app = new Elysia({ prefix: 'v1' })
-  .use(logger)
+  .use(logger.into())
   .use(errorHandler)
   .use(docs)
   .use(AuthController)

@@ -4,4 +4,4 @@ import { config } from '../common/config';
 
 const sql = neon(config.DATABASE_URL);
 
-export const db = drizzle(sql);
+export const dbClient = drizzle(sql);

@@ -1,19 +1,15 @@
-import { logger } from '@/lib/logger';
+import { redisClient } from '@/lib/redis';
 import { AuthDto } from '@/modules/auth/auth.dto';
 import { AuthService } from '@/modules/auth/auth.service';
 import { EmailService } from '@/modules/auth/email.service';
-import { redis } from 'bun';
 import Elysia from 'elysia';
 
 export const AuthController = new Elysia({ prefix: '/auth', tags: ['Auth'] })
-  .use(logger)
-  .derive(({ log }) => ({
-    service: new AuthService(redis, new EmailService(log)),
-  }))
+  .decorate('authService', new AuthService(redisClient, new EmailService()))
   .post(
     '/send-otp',
-    async ({ body: { email }, service }) => {
-      return service.sendOtp(email);
+    async ({ body: { email }, authService }) => {
+      return authService.sendOtp(email);
     },
     {
       body: AuthDto.sendOtp,
@@ -27,8 +23,8 @@ export const AuthController = new Elysia({ prefix: '/auth', tags: ['Auth'] })
   )
   .post(
     '/verify-otp',
-    async ({ body: { email, otp }, service }) => {
-      return service.verifyOtp(email, otp);
+    async ({ body: { email, otp }, authService }) => {
+      return authService.verifyOtp(email, otp);
     },
     {
       body: AuthDto.verifyOtp,

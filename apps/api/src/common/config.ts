@@ -13,6 +13,7 @@ const EnvSchema = t.Object(
   {
     PORT: t.Numeric({ default: 7777 }),
     DATABASE_URL: t.String(),
+    REDIS_URL: t.String({ default: 'redis://localhost:6379' }),
     NODE_ENV: t.Union(
       [t.Literal('development'), t.Literal('production'), t.Literal('test')],
       { default: 'development' },

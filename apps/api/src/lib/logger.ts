@@ -1,15 +1,15 @@
-import { logger as ElysiaLogger } from '@bogeychan/elysia-logger';
-import { config } from '../common/config';
+import { config } from '@/common/config';
+import { createPinoLogger } from '@bogeychan/elysia-logger';
+import { StandaloneLoggerOptions } from '@bogeychan/elysia-logger/types';
 
-type LoggerOptions = Parameters<typeof ElysiaLogger>[0];
-
-const envToLoggerConfig: Record<typeof config.NODE_ENV, LoggerOptions> = {
+const envToStandaloneLoggerConfig: Record<
+  typeof config.NODE_ENV,
+  StandaloneLoggerOptions
+> = {
   production: {
-    autoLogging: true,
     level: config.LOG_LEVEL,
   },
   development: {
-    autoLogging: true,
     level: 'trace',
     transport: {
       target: 'pino-pretty',
@@ -19,9 +19,9 @@ const envToLoggerConfig: Record<typeof config.NODE_ENV, LoggerOptions> = {
       },
     },
   },
-  test: {
-    autoLogging: false,
-  },
+  test: {},
 };
 
-export const logger = ElysiaLogger(envToLoggerConfig[config.NODE_ENV]);
+export const logger: ReturnType<typeof createPinoLogger> = createPinoLogger(
+  envToStandaloneLoggerConfig[config.NODE_ENV],
+);
