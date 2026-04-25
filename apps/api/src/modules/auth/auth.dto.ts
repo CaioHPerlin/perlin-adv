@@ -1,5 +1,5 @@
+import { DefaultResponse } from '@/common/dto';
 import { t, UnwrapSchema } from 'elysia';
-import { DefaultResponse } from '../../common/dto';
 
 export const AuthDto = {
   sendOtp: t.Object({

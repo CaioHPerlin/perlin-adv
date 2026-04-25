@@ -1,9 +1,9 @@
+import { logger } from '@/lib/logger';
+import { AuthDto } from '@/modules/auth/auth.dto';
+import { AuthService } from '@/modules/auth/auth.service';
+import { EmailService } from '@/modules/auth/email.service';
 import { redis } from 'bun';
 import Elysia from 'elysia';
-import { logger } from '../../lib/logger';
-import { AuthDto } from './auth.dto';
-import { AuthService } from './auth.service';
-import { EmailService } from './email.service';
 
 export const AuthController = new Elysia({ prefix: '/auth', tags: ['Auth'] })
   .use(logger)
