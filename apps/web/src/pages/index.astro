@@ -28,10 +28,7 @@ if (Astro.request.method === 'POST') {
       console.error('Error sending OTP:', result.error);
       errorMessage = 'Falha ao enviar o código. Tente novamente.';
     } else {
-      console.log('OTP sent successfully:', result.data);
-      Astro.response.status = 200;
-      return Astro.response();
-      // return Astro.redirect('/auth/verify?email=' + encodeURIComponent(email));
+      return Astro.redirect('/verify?email=' + encodeURIComponent(email));
     }
   } catch (e) {
     console.error('Error sending OTP:', e);

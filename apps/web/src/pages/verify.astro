@@ -1,0 +1,105 @@
+---
+import { Button } from '@/components/starwind/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/starwind/card';
+import {
+  InputOtp,
+  InputOtpGroup,
+  InputOtpSlot,
+  REGEXP_ONLY_DIGITS,
+} from '@/components/starwind/input-otp';
+import Base from '@/layouts/Base.astro';
+import { server } from '@/lib/server';
+
+export const prerender = false;
+
+const email = Astro.url.searchParams.get('email') ?? '';
+
+if (!email) {
+  return Astro.redirect('/');
+}
+
+let errorMessage = '';
+
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const otp = data.get('otp') as string;
+
+    const result = await server.v1.auth['verify-otp'].post({ email, otp });
+
+    if (result.error) {
+      errorMessage =
+        result.error.value?.message ?? 'Código inválido. Tente novamente.';
+    } else {
+      return Astro.redirect('/dashboard');
+    }
+  } catch (e) {
+    console.error('Error verifying OTP:', e);
+    errorMessage = 'Erro ao verificar o código. Tente novamente.';
+  }
+}
+---
+
+<Base>
+  <div class="flex w-full h-screen justify-center items-center">
+    <Card class="w-110 mx-4 md:mx-0">
+      <img
+        src="/assets/office-bg.jpg"
+        alt="Law Office Background"
+        class="h-46 w-full object-cover"
+      />
+      <CardHeader>
+        <CardTitle>Verificar identidade</CardTitle>
+        <CardDescription>
+          Insira o código de 6 dígitos enviado para <strong>{email}</strong>.
+        </CardDescription>
+      </CardHeader>
+
+      <form method="post">
+        <CardContent class="flex flex-col items-center gap-4">
+          <InputOtp
+            maxLength={6}
+            pattern={REGEXP_ONLY_DIGITS}
+            name="otp"
+            id="otp"
+            required
+          >
+            <InputOtpGroup>
+              <InputOtpSlot index={0} />
+              <InputOtpSlot index={1} />
+              <InputOtpSlot index={2} />
+              <InputOtpSlot index={3} />
+              <InputOtpSlot index={4} />
+              <InputOtpSlot index={5} />
+            </InputOtpGroup>
+          </InputOtp>
+
+          {
+            errorMessage && (
+              <p class="text-destructive text-sm">{errorMessage}</p>
+            )
+          }
+        </CardContent>
+
+        <CardFooter class="mt-6 flex flex-col justify-center gap-3">
+          <Button type="submit" variant="primary" class="w-full">
+            Verificar Código
+          </Button>
+          <a
+            href={`/?email=${encodeURIComponent(email)}`}
+            class="text-muted-foreground text-center text-sm underline"
+          >
+            Reenviar código
+          </a>
+        </CardFooter>
+      </form>
+    </Card>
+  </div>
+</Base>
