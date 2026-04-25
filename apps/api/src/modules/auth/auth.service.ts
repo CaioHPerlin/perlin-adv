@@ -1,3 +1,4 @@
+import { AppError, BadRequestError } from '@/common/errors';
 import { AuthDto } from './auth.dto';
 import { EmailService } from './email.service';
 
@@ -32,16 +33,15 @@ export class AuthService {
 
     const storeResult = await this.storeOtp(email, otp);
     if (storeResult !== 'OK') {
-      throw new Error('Failed to store OTP');
+      throw new AppError('Failed to store OTP.');
     }
 
     const isEmailSent = await this.emailService.sendOtp(email, otp);
     if (!isEmailSent) {
-      throw new Error('Failed to send OTP email');
+      throw new AppError('Failed to send OTP email.');
     }
 
     return {
-      success: true,
       message: 'OTP sent successfully',
     };
   }
@@ -53,17 +53,16 @@ export class AuthService {
     const storedOtp = await this.getStoredOtp(email);
 
     if (!storedOtp) {
-      throw new Error('OTP expired or not found');
+      throw new BadRequestError('OTP expired or not found.');
     }
 
     if (storedOtp !== otp) {
-      throw new Error('Invalid OTP');
+      throw new BadRequestError('Invalid OTP.');
     }
 
     this.redisClient.del(`otp:${email}`);
 
     return {
-      success: true,
       message: 'OTP verified successfully',
     };
   }

@@ -1,11 +1,13 @@
 import { config } from '@/common/config';
 import { docs } from '@/lib/docs';
+import { errorHandler } from '@/lib/error-handler';
 import { logger } from '@/lib/logger';
 import { AuthController } from '@/modules/auth/auth.controller';
 import { Elysia } from 'elysia';
 
 const app = new Elysia({ prefix: 'v1' })
   .use(logger)
+  .use(errorHandler)
   .use(docs)
   .use(AuthController)
   .listen(config.PORT);
