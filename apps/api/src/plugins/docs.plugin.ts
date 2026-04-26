@@ -1,5 +1,5 @@
 import openapi from '@elysiajs/openapi';
 
-export const docs = openapi({
+export const docsPlugin = openapi({
   path: '/docs',
 });

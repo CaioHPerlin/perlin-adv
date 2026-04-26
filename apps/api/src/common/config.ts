@@ -1,14 +1,5 @@
 import { getSchemaValidator, t, TSchema } from 'elysia';
 
-function getSchemaDefaults<T extends TSchema>(schema: T): T['static'] {
-  return Object.fromEntries(
-    Object.entries(schema.properties).map(([key, sch]: [string, any]) => [
-      key,
-      sch.default,
-    ]),
-  );
-}
-
 const EnvSchema = t.Object(
   {
     PORT: t.Numeric({ default: 7777 }),
@@ -32,6 +23,15 @@ const EnvSchema = t.Object(
   },
   { additionalProperties: true },
 );
+
+function getSchemaDefaults<T extends TSchema>(schema: T): T['static'] {
+  return Object.fromEntries(
+    Object.entries(schema.properties).map(([key, sch]: [string, any]) => [
+      key,
+      sch.default,
+    ]),
+  );
+}
 
 const validator = getSchemaValidator(EnvSchema);
 const envDefaults = getSchemaDefaults(EnvSchema);

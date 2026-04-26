@@ -1,4 +1,4 @@
-import { logger } from '@/lib/logger';
+import { logger } from '@/common/logger';
 import { Logger } from '@bogeychan/elysia-logger/types';
 
 export class EmailService {

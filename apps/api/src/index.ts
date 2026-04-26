@@ -1,15 +1,17 @@
 import { config } from '@/common/config';
-import { docs } from '@/lib/docs';
-import { errorHandler } from '@/lib/error-handler';
-import { logger } from '@/lib/logger';
 import { AuthController } from '@/modules/auth/auth.controller';
-import { Elysia } from 'elysia';
+import { docsPlugin } from '@/plugins/docs.plugin';
+import { errorHandlerPlugin } from '@/plugins/error-handler.plugin';
+import { loggerPlugin } from '@/plugins/logger.plugin';
+import Elysia from 'elysia';
 
-const app = new Elysia({ prefix: 'v1' })
-  .use(logger.into())
-  .use(errorHandler)
-  .use(docs)
-  .use(AuthController)
+const v1 = new Elysia({ prefix: 'api/v1' }).use(AuthController);
+
+const app = new Elysia()
+  .use(loggerPlugin)
+  .use(docsPlugin)
+  .use(errorHandlerPlugin)
+  .use(v1)
   .listen(config.PORT);
 
 if (app.server) {

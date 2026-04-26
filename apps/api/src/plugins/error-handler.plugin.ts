@@ -1,7 +1,7 @@
 import { AppError } from '@/common/errors';
 import Elysia from 'elysia';
 
-export const errorHandler = new Elysia({ name: 'error-handler' }).onError(
+export const errorHandlerPlugin = new Elysia({ name: 'error-handler' }).onError(
   { as: 'global' },
   ({ error, code, set }) => {
     if (error instanceof AppError) {

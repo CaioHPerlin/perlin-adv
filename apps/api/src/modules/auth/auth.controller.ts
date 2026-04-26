@@ -9,7 +9,8 @@ export const AuthController = new Elysia({ prefix: '/auth', tags: ['Auth'] })
   .post(
     '/send-otp',
     async ({ body: { email }, authService }) => {
-      return authService.sendOtp(email);
+      await authService.sendOtp(email);
+      return { message: 'Código enviado com sucesso' };
     },
     {
       body: AuthDto.sendOtp,
@@ -24,7 +25,8 @@ export const AuthController = new Elysia({ prefix: '/auth', tags: ['Auth'] })
   .post(
     '/verify-otp',
     async ({ body: { email, otp }, authService }) => {
-      return authService.verifyOtp(email, otp);
+      await authService.verifyOtp(email, otp);
+      return { message: 'Código verificado com sucesso' };
     },
     {
       body: AuthDto.verifyOtp,

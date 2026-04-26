@@ -1,5 +1,4 @@
 import { AppError, BadRequestError } from '@/common/errors';
-import { AuthDto } from './auth.dto';
 import { EmailService } from './email.service';
 
 export class AuthService {
@@ -28,7 +27,7 @@ export class AuthService {
     return otp;
   }
 
-  async sendOtp(email: string): Promise<AuthDto['sendOtpResponse']> {
+  async sendOtp(email: string): Promise<void> {
     const otp = this.generateOtp();
 
     const storeResult = await this.storeOtp(email, otp);
@@ -40,16 +39,9 @@ export class AuthService {
     if (!isEmailSent) {
       throw new AppError('Falha ao enviar o código OTP por e-mail.');
     }
-
-    return {
-      message: 'Código OTP enviado com sucesso',
-    };
   }
 
-  async verifyOtp(
-    email: string,
-    otp: string,
-  ): Promise<AuthDto['verifyOtpResponse']> {
+  async verifyOtp(email: string, otp: string): Promise<void> {
     const storedOtp = await this.getStoredOtp(email);
 
     if (!storedOtp) {
@@ -61,9 +53,5 @@ export class AuthService {
     }
 
     this.redisClient.del(`otp:${email}`);
-
-    return {
-      message: 'Código verificado com sucesso',
-    };
   }
 }
