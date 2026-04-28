@@ -20,6 +20,8 @@ const EnvSchema = t.Object(
       ],
       { default: 'info' },
     ),
+    DEV_SMTP_SERVER_AUTH: t.Optional(t.String()),
+    DEV_SMTP_SERVER_PASS: t.Optional(t.String()),
   },
   { additionalProperties: true },
 );
@@ -58,6 +60,20 @@ function validateEnv(env: Record<string, any>): typeof EnvSchema.static {
     }
 
     process.exit(1);
+  }
+
+  const { NODE_ENV } = result.data;
+  if (NODE_ENV === 'development') {
+    console.error('❌ Invalid environment variables');
+    console.error('--------------------------------');
+
+    const missingDevVariables = Object.entries(result.data).filter(
+      ([key, value]) => key.startsWith('DEV_') && !value,
+    );
+
+    console.error(
+      `🔴 Missing Dev Variables: ${missingDevVariables.join(', ')}`,
+    );
   }
 
   return result.data;
