@@ -9,19 +9,18 @@ Sistema web para monitoramento de publicações do Diário da Justiça Eletrôni
 | ID | Descrição | Prioridade |
 |---|---|---|
 | RF001 | O sistema deve permitir o registro de advogado mediante fornecimento de nome completo, e-mail, senha e número de inscrição na OAB. | Alta |
-| RF002 | O sistema deve autenticar o usuário por meio de credenciais criptografadas, restringindo o acesso ao perfil vinculado ao número de OAB cadastrado. | Alta |
+| RF002 | O sistema deve autenticar o usuário, restringindo o acesso ao perfil vinculado ao número de OAB cadastrado. | Alta |
 | RF003 | O sistema deve permitir a redefinição de senha mediante verificação do e-mail cadastrado. | Alta |
 | RF004 | O sistema deve realizar requisições à API do Diário de Justiça Eletrônico Nacional (DJEN/CNJ) para recuperar publicações vinculadas ao número de OAB do usuário, acionadas por agendamento diário (cron) e no momento do cadastro do advogado. | Alta |
 | RF005 | O sistema deve exibir as publicações do usuário autenticado de forma paginada, ordenada por data, com acesso ao texto integral de cada publicação. | Alta |
 | RF006 | O sistema deve permitir a marcação de publicações como **Lida** ou **Pendente**. | Alta |
-| RF007 | O sistema deve permitir o cadastro, consulta, atualização e exclusão de processos judiciais, contendo número do processo (formato CNJ), título, descrição e status (*Em andamento*, *Suspenso*, *Arquivado*, *Baixado*). | Alta |
-| RF008 | O sistema deve identificar o número do processo no formato CNJ (`NNNNNNN-DD.AAAA.J.TT.OOOO`) no texto das publicações e vinculá-las automaticamente ao processo correspondente cadastrado. | Alta |
-| RF009 | O sistema deve permitir que o usuário vincule ou desvincule manualmente uma publicação a um processo cadastrado. | Alta |
-| RF010 | O sistema deve permitir que o usuário registre e edite uma anotação de texto livre associada a cada publicação. | Média |
-| RF01 | O sistema deve exibir um painel inicial contendo o quantitativo de publicações não lidas e um feed das publicações mais recentes. | Média |
-| RF012 | O sistema deve permitir a busca por termos dentro do conteúdo das publicações armazenadas. | Média |
-| RF013 | O sistema deve permitir que o usuário solicite a exclusão definitiva de seu perfil e de todos os dados associados. | Baixa |
-| RF014 | O sistema deve enviar notificação por e-mail ao usuário ao término de cada sincronização diária, informando o quantitativo de novas publicações identificadas. | Baixa |
+| RF007 | O sistema deve permitir o cadastro, alteração, consulta e exclusão de processos judiciais, contendo número do processo, número da pasta, título, descrição, status e observação. | Alta |
+| RF008 | O sistema deve identificar o número do processo no texto das publicações e vinculá-las automaticamente ao processo correspondente cadastrado. | Alta |
+| RF009 | O sistema deve permitir que o usuário vincule ou desvincule manualmente uma publicação a um processo cadastrado. | Alta 
+| RF010 | O sistema deve exibir um painel inicial contendo o quantitativo de publicações não lidas e um feed das publicações mais recentes. | Média |
+| RF011 | O sistema deve permitir a busca por termos dentro do conteúdo das publicações armazenadas. | Média |
+| RF012 | O sistema deve permitir que o usuário solicite a exclusão definitiva de seu perfil e de todos os dados associados. | Baixa |
+| RF013 | O sistema deve enviar notificação por e-mail ao usuário ao término de cada sincronização diária, informando o quantitativo de novas publicações identificadas. | Baixa |
 
 ---
 
@@ -33,16 +32,14 @@ Sistema web para monitoramento de publicações do Diário da Justiça Eletrôni
 | RNF002 | Segurança | Todas as comunicações entre cliente e servidor devem ser realizadas sobre protocolo HTTPS. |
 | RNF003 | Segurança | O sistema deve implementar autenticação stateless por meio de tokens JWT com prazo de expiração definido. |
 | RNF004 | Conformidade | O sistema deve observar os princípios da Lei Geral de Proteção de Dados (LGPD – Lei nº 13.709/2018) no tratamento de dados pessoais de advogados e partes processuais. |
-| RNF005 | Disponibilidade | O sistema deve garantir disponibilidade mínima de 95% no horário de execução do agendamento de coleta. |
-| RNF006 | Desempenho | A listagem paginada de publicações deve ser retornada em tempo inferior a 2 segundos sob carga normal de operação. |
-| RNF007 | Manutenibilidade | O código-fonte deve seguir princípios de separação de responsabilidades, com camadas distintas para apresentação, regras de negócio e acesso a dados. |
-| RNF008 | Interoperabilidade | A integração com a API DJEN deve respeitar as restrições de *rate limiting* impostas pelo CNJ, monitorando o cabeçalho HTTP `x-ratelimit-remaining` para evitar suspensão do serviço. |
-| RNF009 | Interoperabilidade | O sistema deve tratar falhas de indisponibilidade da API DJEN com mecanismo de retry e registro de log do erro, sem interrupção do funcionamento da aplicação. |
-| RNF010 | Usabilidade | A interface deve ser responsiva, garantindo usabilidade em dispositivos móveis e desktops. |
-| RNF011 | Escalabilidade | O modelo de dados deve suportar o crescimento do volume de publicações sem degradação de desempenho, mediante uso de índices nos campos de busca e filtragem. |
-| RNF012 | Portabilidade | O sistema deve ser conteinerizável, permitindo implantação por meio de Docker. |
+| RNF005 | Disponibilidade | O sistema deve garantir disponibilidade mínima de 95% no horário de coleta. |
+| RNF006 | Manutenibilidade | O código-fonte deve seguir princípios de separação de responsabilidades, com camadas distintas para apresentação, regras de negócio e acesso a dados. |
+| RNF007 | Interoperabilidade | A integração com a API DJEN deve respeitar as restrições de *rate limiting* impostas pelo CNJ, monitorando o cabeçalho HTTP `x-ratelimit-remaining` para evitar suspensão do serviço. |
+| RNF008 | Interoperabilidade | O sistema deve tratar falhas de indisponibilidade da API DJEN com mecanismo de retry e registro de log do erro, sem interrupção do funcionamento da aplicação. |
+| RNF009 | Usabilidade | A interface deve ser responsiva, garantindo usabilidade em dispositivos móveis e desktops. |
+| RNF010 | Portabilidade | O sistema deve ser conteinerizável, permitindo implantação por meio de Docker ou Portainer. |
 
 ---
 
-**Versão:** 1.0  
+**Versão:** 1.1
 **Autor:** Caio Hygino Perlin de Lima  
