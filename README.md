@@ -6,21 +6,22 @@ Sistema web para monitoramento de publicações do Diário da Justiça Eletrôni
 
 ## Requisitos Funcionais
 
-| ID | Descrição | Prioridade |
-|---|---|---|
-| RF001 | O sistema deve permitir o registro de advogado mediante fornecimento de nome completo, e-mail, senha e número de inscrição na OAB. | Alta |
-| RF002 | O sistema deve autenticar o usuário, restringindo o acesso ao perfil vinculado ao número de OAB cadastrado. | Alta |
-| RF003 | O sistema deve permitir a redefinição de senha mediante verificação do e-mail cadastrado. | Alta |
-| RF004 | O sistema deve realizar requisições à API do Diário de Justiça Eletrônico Nacional (DJEN/CNJ) para recuperar publicações vinculadas ao número de OAB do usuário, acionadas por agendamento diário (cron) e no momento do cadastro do advogado. | Alta |
-| RF005 | O sistema deve exibir as publicações do usuário autenticado de forma paginada, ordenada por data, com acesso ao texto integral de cada publicação. | Alta |
-| RF006 | O sistema deve permitir a marcação de publicações como **Lida** ou **Pendente**. | Alta |
-| RF007 | O sistema deve permitir o cadastro, alteração, consulta e exclusão de processos judiciais, contendo número do processo, número da pasta, título, descrição, status e observação. | Alta |
-| RF008 | O sistema deve identificar o número do processo no texto das publicações e vinculá-las automaticamente ao processo correspondente cadastrado. | Alta |
-| RF009 | O sistema deve permitir que o usuário vincule ou desvincule manualmente uma publicação a um processo cadastrado. | Alta 
-| RF010 | O sistema deve exibir um painel inicial contendo o quantitativo de publicações não lidas e um feed das publicações mais recentes. | Média |
-| RF011 | O sistema deve permitir a busca por termos dentro do conteúdo das publicações armazenadas. | Média |
-| RF012 | O sistema deve permitir que o usuário solicite a exclusão definitiva de seu perfil e de todos os dados associados. | Baixa |
-| RF013 | O sistema deve enviar notificação por e-mail ao usuário ao término de cada sincronização diária, informando o quantitativo de novas publicações identificadas. | Baixa |
+
+| ID | Descrição |
+|---|---|
+| RF001 | O sistema deve permitir o registro de advogado mediante fornecimento de nome completo, e-mail, senha e número de inscrição na OAB. 
+| RF002 | O sistema deve autenticar o usuário, restringindo o acesso ao perfil vinculado ao número de OAB cadastrado. 
+| RF003 | O sistema deve permitir a redefinição de senha mediante verificação do e-mail cadastrado. 
+| RF004 | O sistema deve realizar requisições à API do Diário de Justiça Eletrônico Nacional (DJEN/CNJ) para recuperar publicações vinculadas ao número de OAB do usuário, acionadas por agendamento diário (cron) e no momento do cadastro do advogado. 
+| RF005 | O sistema deve exibir as publicações do usuário autenticado de forma paginada, ordenada por data, com acesso ao texto integral de cada publicação.
+| RF006 | O sistema deve permitir a marcação de publicações como **Lida** ou **Pendente**. 
+| RF007 | O sistema deve permitir o cadastro, alteração, consulta e exclusão de processos judiciais, contendo número do processo, número da pasta, título, descrição, status e observação.
+| RF008 | O sistema deve identificar o número do processo no texto das publicações e vinculá-las automaticamente ao processo correspondente cadastrado.
+| RF009 | O sistema deve permitir que o usuário vincule ou desvincule manualmente uma publicação a um processo cadastrado. 
+| RF010 | O sistema deve exibir um painel inicial contendo o quantitativo de publicações não lidas e um feed das publicações mais recentes.
+| RF011 | O sistema deve permitir a busca por termos dentro do conteúdo das publicações armazenadas.
+| RF012 | O sistema deve permitir que o usuário solicite a exclusão definitiva de seu perfil e de todos os dados associados. 
+| RF013 | O sistema deve enviar notificação por e-mail ao usuário ao término de cada sincronização diária, informando o quantitativo de novas publicações identificadas.
 
 ---
 
