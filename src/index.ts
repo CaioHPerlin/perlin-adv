@@ -14,6 +14,7 @@ import {
 import z from 'zod'
 
 import { auth } from './lib/auth.js'
+import { caseRoutes } from './routes/cases.js'
 import { meRoutes } from './routes/me.js'
 
 const app = Fastify({
@@ -65,6 +66,7 @@ await app.register(fastifyCors, {
 })
 
 await app.register(meRoutes, { prefix: '/me' })
+await app.register(caseRoutes, { prefix: '/cases' })
 
 app.route({
   method: ['GET', 'POST'],
