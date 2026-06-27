@@ -8,3 +8,10 @@ export {
   ListCasesSchema,
   UpdateCaseBodySchema,
 } from './case.js'
+export {
+  ListPublicationsQuerySchema,
+  ListPublicationsSchema,
+  PublicationParamsSchema,
+  PublicationSchema,
+  SearchPublicationsQuerySchema,
+} from './publication.js'
