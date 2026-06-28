@@ -9,9 +9,12 @@ export {
   UpdateCaseBodySchema,
 } from './case.js'
 export {
+  LinkCaseParamsSchema,
   ListPublicationsQuerySchema,
   ListPublicationsSchema,
   PublicationParamsSchema,
   PublicationSchema,
   SearchPublicationsQuerySchema,
+  UpdatePublicationStatusBodySchema,
+  UpdatePublicationStatusSchema,
 } from './publication.js'

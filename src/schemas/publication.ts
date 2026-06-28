@@ -39,3 +39,17 @@ export const SearchPublicationsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
 })
+
+export const UpdatePublicationStatusBodySchema = z.object({
+  isRead: z.boolean(),
+})
+
+export const UpdatePublicationStatusSchema = z.object({
+  id: z.string(),
+  isRead: z.boolean(),
+})
+
+export const LinkCaseParamsSchema = z.object({
+  pubId: z.string().uuid(),
+  caseId: z.string().uuid(),
+})
