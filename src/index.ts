@@ -17,6 +17,8 @@ import { auth } from './lib/auth.js'
 import { caseRoutes } from './routes/cases.js'
 import { meRoutes } from './routes/me.js'
 import { publicationRoutes } from './routes/publications.js'
+import { syncRoutes } from './routes/sync.js'
+import { startCronJobs } from './cron/index.js'
 
 const app = Fastify({
   logger: true,
@@ -69,6 +71,9 @@ await app.register(fastifyCors, {
 await app.register(meRoutes, { prefix: '/me' })
 await app.register(caseRoutes, { prefix: '/cases' })
 await app.register(publicationRoutes, { prefix: '/publications' })
+await app.register(syncRoutes, { prefix: '/sync' })
+
+startCronJobs()
 
 app.route({
   method: ['GET', 'POST'],
