@@ -15,6 +15,7 @@ import z from 'zod'
 
 import { auth } from './lib/auth.js'
 import { caseRoutes } from './routes/cases.js'
+import { dashboardRoutes } from './routes/dashboard.js'
 import { meRoutes } from './routes/me.js'
 import { publicationRoutes } from './routes/publications.js'
 import { syncRoutes } from './routes/sync.js'
@@ -72,6 +73,7 @@ await app.register(meRoutes, { prefix: '/me' })
 await app.register(caseRoutes, { prefix: '/cases' })
 await app.register(publicationRoutes, { prefix: '/publications' })
 await app.register(syncRoutes, { prefix: '/sync' })
+await app.register(dashboardRoutes, { prefix: '/dashboard' })
 
 startCronJobs()
 
