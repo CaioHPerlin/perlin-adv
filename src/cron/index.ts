@@ -1,6 +1,7 @@
 import cron from 'node-cron'
 
 import { prisma } from '../lib/db.js'
+import { sendSyncNotification } from '../lib/email.js'
 import { SyncPublications } from '../usecases/SyncPublications.js'
 
 export function startCronJobs() {
@@ -16,6 +17,10 @@ export function startCronJobs() {
         const sync = new SyncPublications()
         const result = await sync.execute({ userId: user.id })
         console.log(`[Cron] Sync for user ${user.id}: ${result.message}`)
+
+        if (result.newPublications > 0) {
+          await sendSyncNotification(user.email, user.name, result.newPublications)
+        }
       } catch (error) {
         console.error(`[Cron] Sync failed for user ${user.id}:`, error)
       }

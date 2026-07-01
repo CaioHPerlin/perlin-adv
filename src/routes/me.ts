@@ -3,7 +3,7 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 
 import { auth } from '../lib/auth.js'
-import { DeleteProfileSchema, ErrorSchema, UserProfileSchema } from '../schemas/index.js'
+import { ErrorSchema, MessageSchema, UserProfileSchema } from '../schemas/index.js'
 import { DeleteProfile } from '../usecases/DeleteProfile.js'
 import { GetProfile } from '../usecases/GetProfile.js'
 
@@ -53,7 +53,7 @@ export const meRoutes = async (app: FastifyInstance) => {
       tags: ['Me'],
       summary: 'Delete current user profile and all associated data',
       response: {
-        200: DeleteProfileSchema,
+        200: MessageSchema,
         401: ErrorSchema,
         500: ErrorSchema,
       },

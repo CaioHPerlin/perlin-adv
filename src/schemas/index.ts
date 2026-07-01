@@ -1,5 +1,3 @@
-export { ErrorSchema, MessageSchema } from './common.js'
-export { UserProfileSchema } from './user.js'
 export {
   CaseParamsSchema,
   CaseSchema,
@@ -8,6 +6,7 @@ export {
   ListCasesSchema,
   UpdateCaseBodySchema,
 } from './case.js'
+export { ErrorSchema, MessageSchema } from './common.js'
 export {
   LinkCaseParamsSchema,
   ListPublicationsQuerySchema,
@@ -18,3 +17,4 @@ export {
   UpdatePublicationStatusBodySchema,
   UpdatePublicationStatusSchema,
 } from './publication.js'
+export { UserProfileSchema } from './user.js'

@@ -8,7 +8,3 @@ export const UserProfileSchema = z.object({
   oabUf: z.string(),
   createdAt: z.string(),
 })
-
-export const DeleteProfileSchema = z.object({
-  message: z.string(),
-})
