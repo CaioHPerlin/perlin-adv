@@ -1,3 +1,3 @@
-export { ConflictError } from './conflict.js'
-export { NotFoundError } from './not-found.js'
-export { UnauthorizedError } from './unauthorized.js'
+export { ConflictError } from './conflict.ts'
+export { NotFoundError } from './not-found.ts'
+export { UnauthorizedError } from './unauthorized.ts'

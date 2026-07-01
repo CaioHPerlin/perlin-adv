@@ -1,8 +1,8 @@
 import cron from 'node-cron'
 
-import { prisma } from '../lib/db.js'
-import { sendSyncNotification } from '../lib/email.js'
-import { SyncPublications } from '../usecases/SyncPublications.js'
+import { prisma } from '../lib/db.ts'
+import { sendSyncNotification } from '../lib/email.ts'
+import { SyncPublications } from '../usecases/SyncPublications.ts'
 
 export function startCronJobs() {
   cron.schedule('0 6 * * *', async () => {

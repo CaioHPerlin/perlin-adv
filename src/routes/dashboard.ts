@@ -3,9 +3,9 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import z from 'zod'
 
-import { auth } from '../lib/auth.js'
-import { ErrorSchema } from '../schemas/index.js'
-import { GetDashboard } from '../usecases/GetDashboard.js'
+import { auth } from '../lib/auth.ts'
+import { ErrorSchema } from '../schemas/index.ts'
+import { GetDashboard } from '../usecases/GetDashboard.ts'
 
 const DashboardSchema = z.object({
   unreadCount: z.number(),

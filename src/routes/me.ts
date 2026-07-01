@@ -2,10 +2,10 @@ import { fromNodeHeaders } from 'better-auth/node'
 import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 
-import { auth } from '../lib/auth.js'
-import { ErrorSchema, MessageSchema, UserProfileSchema } from '../schemas/index.js'
-import { DeleteProfile } from '../usecases/DeleteProfile.js'
-import { GetProfile } from '../usecases/GetProfile.js'
+import { auth } from '../lib/auth.ts'
+import { ErrorSchema, MessageSchema, UserProfileSchema } from '../schemas/index.ts'
+import { DeleteProfile } from '../usecases/DeleteProfile.ts'
+import { GetProfile } from '../usecases/GetProfile.ts'
 
 export const meRoutes = async (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({

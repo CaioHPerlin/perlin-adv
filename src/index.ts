@@ -13,13 +13,13 @@ import {
 } from 'fastify-type-provider-zod'
 import z from 'zod'
 
-import { startCronJobs } from './cron/index.js'
-import { auth } from './lib/auth.js'
-import { caseRoutes } from './routes/cases.js'
-import { dashboardRoutes } from './routes/dashboard.js'
-import { meRoutes } from './routes/me.js'
-import { publicationRoutes } from './routes/publications.js'
-import { syncRoutes } from './routes/sync.js'
+import { startCronJobs } from './cron/index.ts'
+import { auth } from './lib/auth.ts'
+import { caseRoutes } from './routes/cases.ts'
+import { dashboardRoutes } from './routes/dashboard.ts'
+import { meRoutes } from './routes/me.ts'
+import { publicationRoutes } from './routes/publications.ts'
+import { syncRoutes } from './routes/sync.ts'
 
 const app = Fastify({
   logger: true,

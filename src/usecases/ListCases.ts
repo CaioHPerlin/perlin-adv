@@ -1,5 +1,5 @@
-import { Prisma } from '../generated/prisma/client.js'
-import { prisma } from '../lib/db.js'
+import { Prisma } from '../generated/prisma/client.ts'
+import { prisma } from '../lib/db.ts'
 
 interface InputDto {
   userId: string

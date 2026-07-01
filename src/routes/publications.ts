@@ -3,8 +3,8 @@ import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import z from 'zod'
 
-import { ConflictError, NotFoundError } from '../errors/index.js'
-import { auth } from '../lib/auth.js'
+import { ConflictError, NotFoundError } from '../errors/index.ts'
+import { auth } from '../lib/auth.ts'
 import {
   ErrorSchema,
   LinkCaseParamsSchema,
@@ -16,13 +16,13 @@ import {
   SearchPublicationsQuerySchema,
   UpdatePublicationStatusBodySchema,
   UpdatePublicationStatusSchema,
-} from '../schemas/index.js'
-import { GetPublication } from '../usecases/GetPublication.js'
-import { LinkCasePublication } from '../usecases/LinkCasePublication.js'
-import { ListPublications } from '../usecases/ListPublications.js'
-import { SearchPublications } from '../usecases/SearchPublications.js'
-import { UnlinkCasePublication } from '../usecases/UnlinkCasePublication.js'
-import { UpdatePublicationStatus } from '../usecases/UpdatePublicationStatus.js'
+} from '../schemas/index.ts'
+import { GetPublication } from '../usecases/GetPublication.ts'
+import { LinkCasePublication } from '../usecases/LinkCasePublication.ts'
+import { ListPublications } from '../usecases/ListPublications.ts'
+import { SearchPublications } from '../usecases/SearchPublications.ts'
+import { UnlinkCasePublication } from '../usecases/UnlinkCasePublication.ts'
+import { UpdatePublicationStatus } from '../usecases/UpdatePublicationStatus.ts'
 
 export const publicationRoutes = async (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({

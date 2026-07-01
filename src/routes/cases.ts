@@ -2,8 +2,8 @@ import { fromNodeHeaders } from 'better-auth/node'
 import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 
-import { NotFoundError } from '../errors/index.js'
-import { auth } from '../lib/auth.js'
+import { NotFoundError } from '../errors/index.ts'
+import { auth } from '../lib/auth.ts'
 import {
   CaseParamsSchema,
   CaseSchema,
@@ -13,12 +13,12 @@ import {
   ListCasesSchema,
   MessageSchema,
   UpdateCaseBodySchema,
-} from '../schemas/index.js'
-import { CreateCase } from '../usecases/CreateCase.js'
-import { DeleteCase } from '../usecases/DeleteCase.js'
-import { GetCase } from '../usecases/GetCase.js'
-import { ListCases } from '../usecases/ListCases.js'
-import { UpdateCase } from '../usecases/UpdateCase.js'
+} from '../schemas/index.ts'
+import { CreateCase } from '../usecases/CreateCase.ts'
+import { DeleteCase } from '../usecases/DeleteCase.ts'
+import { GetCase } from '../usecases/GetCase.ts'
+import { ListCases } from '../usecases/ListCases.ts'
+import { UpdateCase } from '../usecases/UpdateCase.ts'
 
 export const caseRoutes = async (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({

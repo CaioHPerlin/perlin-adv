@@ -1,6 +1,6 @@
 import z from 'zod'
 
-import { CaseStatus } from '../generated/prisma/enums.js'
+import { CaseStatus } from '../generated/prisma/enums.ts'
 
 export const CreateCaseBodySchema = z.object({
   caseNumber: z.string().trim().min(1),

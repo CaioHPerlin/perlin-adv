@@ -6,7 +6,9 @@
     "target": "es2024",
     "skipLibCheck": true,
     "strict": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "allowImportingTsExtensions": true,
+    "noEmit": true
   },
   "include": ["src", "prisma.config.ts"]
 }

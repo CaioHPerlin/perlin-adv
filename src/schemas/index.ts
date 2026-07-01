@@ -5,8 +5,8 @@ export {
   ListCasesQuerySchema,
   ListCasesSchema,
   UpdateCaseBodySchema,
-} from './case.js'
-export { ErrorSchema, MessageSchema } from './common.js'
+} from './case.ts'
+export { ErrorSchema, MessageSchema } from './common.ts'
 export {
   LinkCaseParamsSchema,
   ListPublicationsQuerySchema,
@@ -16,5 +16,5 @@ export {
   SearchPublicationsQuerySchema,
   UpdatePublicationStatusBodySchema,
   UpdatePublicationStatusSchema,
-} from './publication.js'
-export { UserProfileSchema } from './user.js'
+} from './publication.ts'
+export { UserProfileSchema } from './user.ts'

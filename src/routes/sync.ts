@@ -2,9 +2,9 @@ import { fromNodeHeaders } from 'better-auth/node'
 import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 
-import { auth } from '../lib/auth.js'
-import { ErrorSchema, MessageSchema } from '../schemas/index.js'
-import { SyncPublications } from '../usecases/SyncPublications.js'
+import { auth } from '../lib/auth.ts'
+import { ErrorSchema, MessageSchema } from '../schemas/index.ts'
+import { SyncPublications } from '../usecases/SyncPublications.ts'
 
 export const syncRoutes = async (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
