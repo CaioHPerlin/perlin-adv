@@ -1,3 +1,4 @@
+import { $Enums } from '../generated/prisma/client.ts'
 import { NotFoundError } from '../errors/index.ts'
 import { prisma } from '../lib/db.ts'
 
@@ -13,7 +14,7 @@ interface OutputDto {
   folderNumber: string
   title: string
   description: string | null
-  status: 'IN_PROGRESS' | 'ARCHIVED' | 'SUSPENDED' | 'CLOSED'
+  status: $Enums.CaseStatus
   notes: string | null
   createdAt: string
   updatedAt: string
@@ -36,7 +37,7 @@ export class GetCase {
       folderNumber: caseItem.folderNumber,
       title: caseItem.title,
       description: caseItem.description,
-      status: caseItem.status as 'IN_PROGRESS' | 'ARCHIVED' | 'SUSPENDED' | 'CLOSED',
+      status: caseItem.status,
       notes: caseItem.notes,
       createdAt: caseItem.createdAt.toISOString(),
       updatedAt: caseItem.updatedAt.toISOString(),

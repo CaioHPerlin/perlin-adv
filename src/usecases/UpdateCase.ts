@@ -1,3 +1,4 @@
+import { $Enums } from '../generated/prisma/client.ts'
 import { NotFoundError } from '../errors/index.ts'
 import { prisma } from '../lib/db.ts'
 
@@ -8,7 +9,7 @@ interface InputDto {
   folderNumber?: string
   title?: string
   description?: string
-  status?: string
+  status?: $Enums.CaseStatus
   notes?: string
 }
 
@@ -19,7 +20,7 @@ interface OutputDto {
   folderNumber: string
   title: string
   description: string | null
-  status: 'IN_PROGRESS' | 'ARCHIVED' | 'SUSPENDED' | 'CLOSED'
+  status: $Enums.CaseStatus
   notes: string | null
   createdAt: string
   updatedAt: string
@@ -27,14 +28,6 @@ interface OutputDto {
 
 export class UpdateCase {
   async execute(dto: InputDto): Promise<OutputDto> {
-    const existing = await prisma.case.findFirst({
-      where: { id: dto.caseId, userId: dto.userId },
-    })
-
-    if (!existing) {
-      throw new NotFoundError('Case not found')
-    }
-
     const caseItem = await prisma.case.update({
       where: { id: dto.caseId },
       data: {
@@ -42,10 +35,14 @@ export class UpdateCase {
         ...(dto.folderNumber !== undefined && { folderNumber: dto.folderNumber }),
         ...(dto.title !== undefined && { title: dto.title }),
         ...(dto.description !== undefined && { description: dto.description }),
-        ...(dto.status !== undefined && { status: dto.status as 'IN_PROGRESS' }),
+        ...(dto.status !== undefined && { status: dto.status }),
         ...(dto.notes !== undefined && { notes: dto.notes }),
       },
     })
+
+    if (caseItem.userId !== dto.userId) {
+      throw new NotFoundError('Case not found')
+    }
 
     return {
       id: caseItem.id,
@@ -54,7 +51,7 @@ export class UpdateCase {
       folderNumber: caseItem.folderNumber,
       title: caseItem.title,
       description: caseItem.description,
-      status: caseItem.status as 'IN_PROGRESS' | 'ARCHIVED' | 'SUSPENDED' | 'CLOSED',
+      status: caseItem.status,
       notes: caseItem.notes,
       createdAt: caseItem.createdAt.toISOString(),
       updatedAt: caseItem.updatedAt.toISOString(),

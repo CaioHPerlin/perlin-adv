@@ -14,18 +14,14 @@ interface OutputDto {
 
 export class UpdatePublicationStatus {
   async execute(dto: InputDto): Promise<OutputDto> {
-    const publication = await prisma.publication.findFirst({
-      where: { id: dto.publicationId, userId: dto.userId },
-    })
-
-    if (!publication) {
-      throw new NotFoundError('Publication not found')
-    }
-
     const updated = await prisma.publication.update({
       where: { id: dto.publicationId },
       data: { isRead: dto.isRead },
     })
+
+    if (updated.userId !== dto.userId) {
+      throw new NotFoundError('Publication not found')
+    }
 
     return {
       id: updated.id,

@@ -2,6 +2,7 @@ import { fromNodeHeaders } from 'better-auth/node'
 import { FastifyRequest } from 'fastify'
 
 import { UnauthorizedError } from '../errors/index.ts'
+import { prisma } from './db.ts'
 import { auth } from './auth.ts'
 
 declare module 'fastify' {
@@ -17,5 +18,14 @@ export async function authGuard(request: FastifyRequest) {
   if (!session) {
     throw new UnauthorizedError('Unauthorized')
   }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { deletedAt: true },
+  })
+  if (!user || user.deletedAt) {
+    throw new UnauthorizedError('Unauthorized')
+  }
+
   request.userId = session.user.id
 }

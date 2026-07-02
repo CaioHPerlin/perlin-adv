@@ -13,26 +13,16 @@ interface OutputDto {
 
 export class UnlinkCasePublication {
   async execute(dto: InputDto): Promise<OutputDto> {
-    const link = await prisma.casePublication.findUnique({
+    const { count } = await prisma.casePublication.deleteMany({
       where: {
-        caseId_publicationId: {
-          caseId: dto.caseId,
-          publicationId: dto.publicationId,
-        },
+        caseId: dto.caseId,
+        publicationId: dto.publicationId,
       },
     })
-    if (!link) {
+
+    if (count === 0) {
       throw new NotFoundError('Link between publication and case not found')
     }
-
-    await prisma.casePublication.delete({
-      where: {
-        caseId_publicationId: {
-          caseId: dto.caseId,
-          publicationId: dto.publicationId,
-        },
-      },
-    })
 
     return { message: 'Publication unlinked from case successfully' }
   }

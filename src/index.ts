@@ -80,6 +80,15 @@ app.setErrorHandler((error, _request, reply) => {
   if (error instanceof UnauthorizedError) {
     return reply.status(401).send({ error: error.message, code: 'UNAUTHORIZED' })
   }
+  if (typeof error === 'object' && error !== null && 'code' in error && typeof (error as Record<string, unknown>).code === 'string') {
+    const code = (error as Record<string, unknown>).code as string
+    if (code === 'P2002') {
+      return reply.status(409).send({ error: 'Resource already exists', code: 'CONFLICT_ERROR' })
+    }
+    if (code === 'P2025') {
+      return reply.status(404).send({ error: 'Resource not found', code: 'NOT_FOUND_ERROR' })
+    }
+  }
   app.log.error(error)
   return reply.status(500).send({ error: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' })
 })
@@ -148,7 +157,7 @@ app.withTypeProvider<ZodTypeProvider>().route({
 })
 
 try {
-  await app.listen({ port: Number(process.env.PORT) || 8080 })
+  await app.listen({ host: '0.0.0.0', port: Number(process.env.PORT) || 8080 })
   console.log(`Server is running on port ${process.env.PORT || 8080}`)
 } catch (err) {
   app.log.error(err)

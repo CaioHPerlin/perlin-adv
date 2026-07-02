@@ -1,11 +1,11 @@
-import { Prisma } from '../generated/prisma/client.ts'
+import { $Enums, Prisma } from '../generated/prisma/client.ts'
 import { prisma } from '../lib/db.ts'
 
 interface InputDto {
   userId: string
   page: number
   limit: number
-  status?: string
+  status?: $Enums.CaseStatus
 }
 
 interface CaseDto {
@@ -15,7 +15,7 @@ interface CaseDto {
   folderNumber: string
   title: string
   description: string | null
-  status: 'IN_PROGRESS' | 'ARCHIVED' | 'SUSPENDED' | 'CLOSED'
+  status: $Enums.CaseStatus
   notes: string | null
   createdAt: string
   updatedAt: string
@@ -36,7 +36,7 @@ export class ListCases {
     }
 
     if (dto.status) {
-      where.status = dto.status as Prisma.EnumCaseStatusFilter['equals']
+      where.status = dto.status
     }
 
     const [cases, total] = await Promise.all([
@@ -57,7 +57,7 @@ export class ListCases {
         folderNumber: c.folderNumber,
         title: c.title,
         description: c.description,
-        status: c.status as 'IN_PROGRESS' | 'ARCHIVED' | 'SUSPENDED' | 'CLOSED',
+        status: c.status,
         notes: c.notes,
         createdAt: c.createdAt.toISOString(),
         updatedAt: c.updatedAt.toISOString(),

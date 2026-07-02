@@ -11,18 +11,14 @@ interface OutputDto {
 
 export class DeleteProfile {
   async execute(dto: InputDto): Promise<OutputDto> {
-    const user = await prisma.user.findFirst({
-      where: { id: dto.userId },
-    })
-
-    if (!user) {
-      throw new NotFoundError('User not found')
-    }
-
-    await prisma.user.update({
-      where: { id: dto.userId },
+    const { count } = await prisma.user.updateMany({
+      where: { id: dto.userId, deletedAt: null },
       data: { deletedAt: new Date() },
     })
+
+    if (count === 0) {
+      throw new NotFoundError('User not found')
+    }
 
     return {
       message: 'Profile and all associated data have been deleted',

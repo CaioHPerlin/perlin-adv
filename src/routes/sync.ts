@@ -1,9 +1,15 @@
 import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
+import z from 'zod'
 
 import { authGuard } from '../lib/auth-guard.ts'
-import { ErrorSchema, MessageSchema } from '../schemas/index.ts'
+import { ErrorSchema } from '../schemas/index.ts'
 import { SyncPublications } from '../usecases/SyncPublications.ts'
+
+const SyncResponseSchema = z.object({
+  message: z.string(),
+  newPublications: z.number(),
+})
 
 export const syncRoutes = async (app: FastifyInstance) => {
   app.withTypeProvider<ZodTypeProvider>().route({
@@ -13,7 +19,7 @@ export const syncRoutes = async (app: FastifyInstance) => {
       tags: ['Sync'],
       summary: 'Manually trigger DJEN publication sync',
       response: {
-        200: MessageSchema,
+        200: SyncResponseSchema,
         401: ErrorSchema,
         500: ErrorSchema,
       },

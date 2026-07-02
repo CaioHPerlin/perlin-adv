@@ -6,18 +6,41 @@ export interface DjenPublication {
   extractedCaseNumber?: string
 }
 
-interface DjenApiResponse {
-  comunicacoes?: Array<{
-    numeroComunicacao?: string
-    assunto?: string
-    textoComunicacao?: string
-    dataCriacao?: string
-    processo?: {
-      numeroProcesso?: string
-    }
+interface DjenApiItem {
+  id: number
+  data_disponibilizacao: string
+  siglaTribunal: string
+  tipoComunicacao: string
+  nomeOrgao: string
+  texto: string
+  numero_processo: string
+  meio: string
+  link: string
+  tipoDocumento: string
+  nomeClasse: string
+  codigoClasse: string
+  numeroComunicacao: number
+  ativo: boolean
+  hash: string
+  datadisponibilizacao: string
+  meiocompleto: string
+  numeroprocessocommascara: string
+  destinatarios: Array<{ nome: string; polo: string; comunicacao_id: number }>
+  destinatarioadvogados: Array<{
+    id: number
+    comunicacao_id: number
+    advogado_id: number
+    created_at: string
+    updated_at: string
+    advogado: { id: number; nome: string; numero_oab: string; uf_oab: string }
   }>
-  totalPages?: number
-  totalElements?: number
+}
+
+interface DjenApiResponse {
+  status: string
+  message: string
+  count: number
+  items: DjenApiItem[]
 }
 
 const MAX_RETRIES = 3
@@ -32,44 +55,42 @@ export class DjenClient {
   private rateLimitRemaining: number = 100
 
   constructor() {
-    this.baseUrl = process.env.DJEN_API_URL || 'https://comunica.pje.jus.br/api/v1'
+    this.baseUrl = process.env.DJEN_API_URL || 'https://comunicaapi.pje.jus.br/api/v1'
   }
 
   async fetchPublicationsByOab(oabNumber: string, oabUf: string): Promise<DjenPublication[]> {
     const publications: DjenPublication[] = []
-    let page = 0
-    let totalPages = 1
+    let pagina = 0
 
-    while (page < totalPages) {
-      if (this.rateLimitRemaining <= 0) {
-        break
-      }
+    while (true) {
+      if (this.rateLimitRemaining <= 0) break
 
-      const response = await this.makeRequest(`${this.baseUrl}/comunicacoes/representantes`, {
-        oab: oabNumber,
-        uf: oabUf,
-        page,
-        size: 100,
+      const response = await this.makeRequest(`${this.baseUrl}/comunicacao`, {
+        numeroOab: oabNumber,
+        ufOab: oabUf,
+        itensPorPagina: 100,
+        pagina,
       })
 
       if (!response) break
 
-      const data: DjenApiResponse = await response.json()
+      const data = await this.parseResponse(response)
+      if (!data || !data.items) break
 
-      if (data.comunicacoes) {
-        for (const item of data.comunicacoes) {
-          publications.push({
-            title: item.assunto || 'Sem assunto',
-            content: item.textoComunicacao || '',
-            publishedAt: item.dataCriacao || new Date().toISOString(),
-            sourceId: item.numeroComunicacao || `${oabNumber}-${page}-${publications.length}`,
-            extractedCaseNumber: item.processo?.numeroProcesso,
-          })
-        }
+      const totalPages = Math.ceil(data.count / 100)
+
+      for (const item of data.items) {
+        publications.push({
+          title: item.tipoComunicacao || item.nomeClasse || 'Comunicação',
+          content: item.texto || '',
+          publishedAt: item.data_disponibilizacao || new Date().toISOString(),
+          sourceId: String(item.numeroComunicacao || `${oabNumber}-${pagina}-${publications.length}`),
+          extractedCaseNumber: item.numero_processo || undefined,
+        })
       }
 
-      totalPages = data.totalPages ?? 1
-      page++
+      pagina++
+      if (pagina >= totalPages) break
     }
 
     return publications
@@ -77,39 +98,48 @@ export class DjenClient {
 
   async fetchPublicationsByCaseNumber(caseNumber: string): Promise<DjenPublication[]> {
     const publications: DjenPublication[] = []
-    let page = 0
-    let totalPages = 1
+    let pagina = 0
 
-    while (page < totalPages) {
+    while (true) {
       if (this.rateLimitRemaining <= 0) break
 
-      const response = await this.makeRequest(`${this.baseUrl}/comunicacoes`, {
+      const response = await this.makeRequest(`${this.baseUrl}/comunicacao`, {
         numeroProcesso: caseNumber,
-        page,
-        size: 100,
+        itensPorPagina: 100,
+        pagina,
       })
 
       if (!response) break
 
-      const data: DjenApiResponse = await response.json()
+      const data = await this.parseResponse(response)
+      if (!data || !data.items) break
 
-      if (data.comunicacoes) {
-        for (const item of data.comunicacoes) {
-          publications.push({
-            title: item.assunto || 'Sem assunto',
-            content: item.textoComunicacao || '',
-            publishedAt: item.dataCriacao || new Date().toISOString(),
-            sourceId: item.numeroComunicacao || `${caseNumber}-${page}-${publications.length}`,
-            extractedCaseNumber: item.processo?.numeroProcesso,
-          })
-        }
+      const totalPages = Math.ceil(data.count / 100)
+
+      for (const item of data.items) {
+        publications.push({
+          title: item.tipoComunicacao || item.nomeClasse || 'Comunicação',
+          content: item.texto || '',
+          publishedAt: item.data_disponibilizacao || new Date().toISOString(),
+          sourceId: String(item.numeroComunicacao || `${caseNumber}-${pagina}-${publications.length}`),
+          extractedCaseNumber: item.numero_processo || undefined,
+        })
       }
 
-      totalPages = data.totalPages ?? 1
-      page++
+      pagina++
+      if (pagina >= totalPages) break
     }
 
     return publications
+  }
+
+  private async parseResponse(response: Response): Promise<DjenApiResponse | null> {
+    try {
+      return await response.json() as DjenApiResponse
+    } catch {
+      console.error('[DjenClient] Failed to parse DJEN API response as JSON')
+      return null
+    }
   }
 
   private getRetryDelay(attempt: number): number {
@@ -148,8 +178,9 @@ export class DjenClient {
 
       const fullUrl = `${url}?${searchParams.toString()}`
       const response = await fetch(fullUrl, {
+        signal: AbortSignal.timeout(15_000),
         headers: {
-          'Content-Type': 'application/json',
+          Accept: 'application/json',
           ...(process.env.DJEN_API_KEY ? { 'X-API-Key': process.env.DJEN_API_KEY } : {}),
         },
       })

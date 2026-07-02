@@ -42,6 +42,18 @@ export const auth = betterAuth({
         },
       },
     },
+    session: {
+      create: {
+        before: async (session) => {
+          const user = await prisma.user.findUnique({
+            where: { id: session.userId },
+            select: { deletedAt: true },
+          })
+          if (!user || user.deletedAt) return false
+          return { data: session }
+        },
+      },
+    },
   },
   plugins: [openAPI()],
 })

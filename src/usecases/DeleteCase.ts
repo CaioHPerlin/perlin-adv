@@ -12,15 +12,13 @@ interface OutputDto {
 
 export class DeleteCase {
   async execute(dto: InputDto): Promise<OutputDto> {
-    const existing = await prisma.case.findFirst({
+    const { count } = await prisma.case.deleteMany({
       where: { id: dto.caseId, userId: dto.userId },
     })
 
-    if (!existing) {
+    if (count === 0) {
       throw new NotFoundError('Case not found')
     }
-
-    await prisma.case.delete({ where: { id: dto.caseId } })
 
     return { message: 'Case deleted successfully' }
   }

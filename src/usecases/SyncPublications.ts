@@ -22,56 +22,60 @@ export class SyncPublications {
     let newPublications = 0
 
     for (const remote of remotePublications) {
-      const existing = await prisma.publication.findFirst({
-        where: { userId: dto.userId, sourceId: remote.sourceId },
-      })
-
-      if (existing) continue
-
-      let extractedCaseNumber = remote.extractedCaseNumber
-
-      if (!extractedCaseNumber) {
-        const match = remote.content.match(/\b\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}\b/)
-        if (match) {
-          extractedCaseNumber = match[0]
-        }
-      }
-
-      const pub = await prisma.publication.create({
-        data: {
-          userId: dto.userId,
-          title: remote.title,
-          content: remote.content,
-          publishedAt: new Date(remote.publishedAt),
-          extractedCaseNumber,
-          sourceId: remote.sourceId,
-        },
-      })
-
-      if (extractedCaseNumber) {
-        const linkedCase = await prisma.case.findFirst({
-          where: { userId: dto.userId, caseNumber: extractedCaseNumber },
+      const created = await prisma.$transaction(async (tx) => {
+        const existing = await tx.publication.findFirst({
+          where: { userId: dto.userId, sourceId: remote.sourceId },
         })
 
-        if (linkedCase) {
-          await prisma.casePublication.upsert({
-            where: {
-              caseId_publicationId: {
+        if (existing) return null
+
+        let extractedCaseNumber = remote.extractedCaseNumber
+
+        if (!extractedCaseNumber) {
+          const match = remote.content.match(/\b\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}\b/)
+          if (match) {
+            extractedCaseNumber = match[0]
+          }
+        }
+
+        const pub = await tx.publication.create({
+          data: {
+            userId: dto.userId,
+            title: remote.title,
+            content: remote.content,
+            publishedAt: new Date(remote.publishedAt),
+            extractedCaseNumber,
+            sourceId: remote.sourceId,
+          },
+        })
+
+        if (extractedCaseNumber) {
+          const linkedCase = await tx.case.findFirst({
+            where: { userId: dto.userId, caseNumber: extractedCaseNumber },
+          })
+
+          if (linkedCase) {
+            await tx.casePublication.upsert({
+              where: {
+                caseId_publicationId: {
+                  caseId: linkedCase.id,
+                  publicationId: pub.id,
+                },
+              },
+              create: {
                 caseId: linkedCase.id,
                 publicationId: pub.id,
+                isManualLink: false,
               },
-            },
-            create: {
-              caseId: linkedCase.id,
-              publicationId: pub.id,
-              isManualLink: false,
-            },
-            update: {},
-          })
+              update: {},
+            })
+          }
         }
-      }
 
-      newPublications++
+        return pub
+      })
+
+      if (created) newPublications++
     }
 
     return {

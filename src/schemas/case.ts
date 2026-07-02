@@ -4,7 +4,7 @@ import { CaseStatus } from '../generated/prisma/enums.ts'
 
 export const CreateCaseBodySchema = z.object({
   caseNumber: z.string().trim().min(1),
-  folderNumber: z.string().trim().min(1),
+  folderNumber: z.string().trim().min(1).optional(),
   title: z.string().trim().min(1),
   description: z.string().optional(),
   status: z.enum(CaseStatus).optional(),
