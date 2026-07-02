@@ -10,8 +10,9 @@ interface OutputDto {
 
 export class DeleteProfile {
   async execute(dto: InputDto): Promise<OutputDto> {
-    await prisma.user.delete({
+    await prisma.user.update({
       where: { id: dto.userId },
+      data: { deletedAt: new Date() },
     })
 
     return {
