@@ -2,8 +2,8 @@ import { fromNodeHeaders } from 'better-auth/node'
 import { FastifyRequest } from 'fastify'
 
 import { UnauthorizedError } from '../errors/index.ts'
-import { prisma } from './db.ts'
 import { auth } from './auth.ts'
+import { prisma } from './db.ts'
 
 declare module 'fastify' {
   interface FastifyRequest {

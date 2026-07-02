@@ -1,5 +1,5 @@
-import { $Enums } from '../generated/prisma/client.ts'
 import { NotFoundError } from '../errors/index.ts'
+import { $Enums } from '../generated/prisma/client.ts'
 import { prisma } from '../lib/db.ts'
 
 interface InputDto {

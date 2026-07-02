@@ -1,37 +1,63 @@
 import nodemailer from 'nodemailer'
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.example.com',
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: Number(process.env.SMTP_PORT) === 465,
-  auth: {
-    user: process.env.SMTP_USER || '',
-    pass: process.env.SMTP_PASS || '',
-  },
-})
+let transporter: nodemailer.Transporter | null = null
 
-function isEmailConfigured(): boolean {
-  return !(!process.env.SMTP_HOST || process.env.SMTP_HOST === 'smtp.example.com')
+const smtpHost = process.env.SMTP_HOST
+
+if (process.env.CONSOLE_MODE === 'true') {
+  console.log('[Email] Console mode — emails will be printed to stdout')
+} else if (smtpHost) {
+  transporter = nodemailer.createTransport({
+    host: smtpHost,
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: Number(process.env.SMTP_PORT) === 465,
+    auth: {
+      user: process.env.SMTP_USER || '',
+      pass: process.env.SMTP_PASS || '',
+    },
+  })
+  console.log('[Email] SMTP configured — using', smtpHost)
+} else {
+  console.warn('[Email] No SMTP configured — emails will be silently skipped')
+}
+
+function print(to: string, subject: string, html: string): void {
+  console.log()
+  console.log('―'.repeat(50))
+  console.log(`TO:      ${to}`)
+  console.log(`SUBJECT: ${subject}`)
+  console.log('―'.repeat(50))
+  console.log(html.replace(/<[^>]+>/g, '').trim())
+  console.log('―'.repeat(50))
+  console.log()
 }
 
 export async function sendPasswordResetEmail(to: string, name: string, url: string): Promise<void> {
-  if (!isEmailConfigured()) return
+  const subject = 'Redefinição de senha — Perlin Adv'
+  const html = `
+    <h2>Olá, ${name}!</h2>
+    <p>Recebemos uma solicitação de redefinição de senha para sua conta.</p>
+    <p>Clique no link abaixo para criar uma nova senha:</p>
+    <p><a href="${url}">${url}</a></p>
+    <p>Este link é válido por tempo limitado.</p>
+    <p>Se você não solicitou esta alteração, ignore este e-mail.</p>
+    <br/>
+    <p>Equipe Perlin Adv</p>
+  `
+
+  if (process.env.CONSOLE_MODE === 'true') {
+    print(to, subject, html)
+    return
+  }
+
+  if (!transporter) return
 
   try {
     await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"Perlin Adv" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to,
-      subject: 'Redefinição de senha — Perlin Adv',
-      html: `
-        <h2>Olá, ${name}!</h2>
-        <p>Recebemos uma solicitação de redefinição de senha para sua conta.</p>
-        <p>Clique no link abaixo para criar uma nova senha:</p>
-        <p><a href="${url}">${url}</a></p>
-        <p>Este link é válido por tempo limitado.</p>
-        <p>Se você não solicitou esta alteração, ignore este e-mail.</p>
-        <br/>
-        <p>Equipe Perlin Adv</p>
-      `,
+      subject,
+      html,
     })
   } catch (error) {
     console.error('Failed to send password reset email:', error)
@@ -43,21 +69,29 @@ export async function sendSyncNotification(
   name: string,
   newPublications: number
 ): Promise<void> {
-  if (!isEmailConfigured()) return
+  const subject = 'Sincronização DJEN concluída'
+  const html = `
+    <h2>Olá, ${name}!</h2>
+    <p>A sincronização diária com o Diário de Justiça Eletrônico Nacional foi concluída.</p>
+    <p><strong>${newPublications}</strong> nova(s) publicação(ões) encontrada(s).</p>
+    <p>Acesse o sistema para visualizar suas publicações.</p>
+    <br/>
+    <p>Equipe Perlin Adv</p>
+  `
+
+  if (process.env.CONSOLE_MODE === 'true') {
+    print(to, subject, html)
+    return
+  }
+
+  if (!transporter) return
 
   try {
     await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"Perlin Adv" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to,
-      subject: 'Sincronização DJEN concluída',
-      html: `
-        <h2>Olá, ${name}!</h2>
-        <p>A sincronização diária com o Diário de Justiça Eletrônico Nacional foi concluída.</p>
-        <p><strong>${newPublications}</strong> nova(s) publicação(ões) encontrada(s).</p>
-        <p>Acesse o sistema para visualizar suas publicações.</p>
-        <br/>
-        <p>Equipe Perlin Adv</p>
-      `,
+      subject,
+      html,
     })
   } catch (error) {
     console.error('Failed to send sync notification email:', error)
