@@ -14,6 +14,7 @@ import {
 import z from 'zod'
 
 import { startCronJobs } from './cron/index.ts'
+import { ConflictError, NotFoundError, UnauthorizedError } from './errors/index.ts'
 import { auth } from './lib/auth.ts'
 import { caseRoutes } from './routes/cases.ts'
 import { dashboardRoutes } from './routes/dashboard.ts'
@@ -67,6 +68,20 @@ await app.register(ScalarApiReference, {
 await app.register(fastifyCors, {
   origin: ['http://localhost:3000'],
   credentials: true,
+})
+
+app.setErrorHandler((error, _request, reply) => {
+  if (error instanceof NotFoundError) {
+    return reply.status(404).send({ error: error.message, code: 'NOT_FOUND_ERROR' })
+  }
+  if (error instanceof ConflictError) {
+    return reply.status(409).send({ error: error.message, code: 'CONFLICT_ERROR' })
+  }
+  if (error instanceof UnauthorizedError) {
+    return reply.status(401).send({ error: error.message, code: 'UNAUTHORIZED' })
+  }
+  app.log.error(error)
+  return reply.status(500).send({ error: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' })
 })
 
 await app.register(meRoutes, { prefix: '/me' })

@@ -1,10 +1,8 @@
-import { fromNodeHeaders } from 'better-auth/node'
 import { FastifyInstance } from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import z from 'zod'
 
-import { ConflictError, NotFoundError } from '../errors/index.ts'
-import { auth } from '../lib/auth.ts'
+import { authGuard } from '../lib/auth-guard.ts'
 import {
   ErrorSchema,
   LinkCaseParamsSchema,
@@ -38,28 +36,16 @@ export const publicationRoutes = async (app: FastifyInstance) => {
         500: ErrorSchema,
       },
     },
+    preHandler: [authGuard],
     handler: async (request, reply) => {
-      try {
-        const session = await auth.api.getSession({
-          headers: fromNodeHeaders(request.headers),
-        })
-        if (!session) {
-          return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' })
-        }
-
-        const listPublications = new ListPublications()
-        const result = await listPublications.execute({
-          userId: session.user.id,
-          page: request.query.page,
-          limit: request.query.limit,
-          isRead: request.query.isRead,
-        })
-
-        return reply.status(200).send(result)
-      } catch (error) {
-        app.log.error(error)
-        return reply.status(500).send({ error: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' })
-      }
+      const listPublications = new ListPublications()
+      const result = await listPublications.execute({
+        userId: request.userId,
+        page: request.query.page,
+        limit: request.query.limit,
+        isRead: request.query.isRead,
+      })
+      return reply.status(200).send(result)
     },
   })
 
@@ -76,28 +62,16 @@ export const publicationRoutes = async (app: FastifyInstance) => {
         500: ErrorSchema,
       },
     },
+    preHandler: [authGuard],
     handler: async (request, reply) => {
-      try {
-        const session = await auth.api.getSession({
-          headers: fromNodeHeaders(request.headers),
-        })
-        if (!session) {
-          return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' })
-        }
-
-        const searchPublications = new SearchPublications()
-        const result = await searchPublications.execute({
-          userId: session.user.id,
-          query: request.query.q,
-          page: request.query.page,
-          limit: request.query.limit,
-        })
-
-        return reply.status(200).send(result)
-      } catch (error) {
-        app.log.error(error)
-        return reply.status(500).send({ error: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' })
-      }
+      const searchPublications = new SearchPublications()
+      const result = await searchPublications.execute({
+        userId: request.userId,
+        query: request.query.q,
+        page: request.query.page,
+        limit: request.query.limit,
+      })
+      return reply.status(200).send(result)
     },
   })
 
@@ -116,30 +90,15 @@ export const publicationRoutes = async (app: FastifyInstance) => {
         500: ErrorSchema,
       },
     },
+    preHandler: [authGuard],
     handler: async (request, reply) => {
-      try {
-        const session = await auth.api.getSession({
-          headers: fromNodeHeaders(request.headers),
-        })
-        if (!session) {
-          return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' })
-        }
-
-        const updateStatus = new UpdatePublicationStatus()
-        const result = await updateStatus.execute({
-          userId: session.user.id,
-          publicationId: request.params.pubId,
-          isRead: request.body.isRead,
-        })
-
-        return reply.status(200).send(result)
-      } catch (error) {
-        if (error instanceof NotFoundError) {
-          return reply.status(404).send({ error: error.message, code: 'NOT_FOUND_ERROR' })
-        }
-        app.log.error(error)
-        return reply.status(500).send({ error: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' })
-      }
+      const updateStatus = new UpdatePublicationStatus()
+      const result = await updateStatus.execute({
+        userId: request.userId,
+        publicationId: request.params.pubId,
+        isRead: request.body.isRead,
+      })
+      return reply.status(200).send(result)
     },
   })
 
@@ -158,33 +117,15 @@ export const publicationRoutes = async (app: FastifyInstance) => {
         500: ErrorSchema,
       },
     },
+    preHandler: [authGuard],
     handler: async (request, reply) => {
-      try {
-        const session = await auth.api.getSession({
-          headers: fromNodeHeaders(request.headers),
-        })
-        if (!session) {
-          return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' })
-        }
-
-        const linkCasePub = new LinkCasePublication()
-        const result = await linkCasePub.execute({
-          userId: session.user.id,
-          publicationId: request.params.pubId,
-          caseId: request.params.caseId,
-        })
-
-        return reply.status(200).send(result)
-      } catch (error) {
-        if (error instanceof NotFoundError) {
-          return reply.status(404).send({ error: error.message, code: 'NOT_FOUND_ERROR' })
-        }
-        if (error instanceof ConflictError) {
-          return reply.status(409).send({ error: error.message, code: 'CONFLICT_ERROR' })
-        }
-        app.log.error(error)
-        return reply.status(500).send({ error: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' })
-      }
+      const linkCasePub = new LinkCasePublication()
+      const result = await linkCasePub.execute({
+        userId: request.userId,
+        publicationId: request.params.pubId,
+        caseId: request.params.caseId,
+      })
+      return reply.status(200).send(result)
     },
   })
 
@@ -202,30 +143,15 @@ export const publicationRoutes = async (app: FastifyInstance) => {
         500: ErrorSchema,
       },
     },
+    preHandler: [authGuard],
     handler: async (request, reply) => {
-      try {
-        const session = await auth.api.getSession({
-          headers: fromNodeHeaders(request.headers),
-        })
-        if (!session) {
-          return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' })
-        }
-
-        const unlinkCasePub = new UnlinkCasePublication()
-        const result = await unlinkCasePub.execute({
-          userId: session.user.id,
-          publicationId: request.params.pubId,
-          caseId: request.params.caseId,
-        })
-
-        return reply.status(200).send(result)
-      } catch (error) {
-        if (error instanceof NotFoundError) {
-          return reply.status(404).send({ error: error.message, code: 'NOT_FOUND_ERROR' })
-        }
-        app.log.error(error)
-        return reply.status(500).send({ error: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' })
-      }
+      const unlinkCasePub = new UnlinkCasePublication()
+      const result = await unlinkCasePub.execute({
+        userId: request.userId,
+        publicationId: request.params.pubId,
+        caseId: request.params.caseId,
+      })
+      return reply.status(200).send(result)
     },
   })
 
@@ -243,29 +169,14 @@ export const publicationRoutes = async (app: FastifyInstance) => {
         500: ErrorSchema,
       },
     },
+    preHandler: [authGuard],
     handler: async (request, reply) => {
-      try {
-        const session = await auth.api.getSession({
-          headers: fromNodeHeaders(request.headers),
-        })
-        if (!session) {
-          return reply.status(401).send({ error: 'Unauthorized', code: 'UNAUTHORIZED' })
-        }
-
-        const getPublication = new GetPublication()
-        const result = await getPublication.execute({
-          userId: session.user.id,
-          publicationId: request.params.id,
-        })
-
-        return reply.status(200).send(result)
-      } catch (error) {
-        if (error instanceof NotFoundError) {
-          return reply.status(404).send({ error: error.message, code: 'NOT_FOUND_ERROR' })
-        }
-        app.log.error(error)
-        return reply.status(500).send({ error: 'Internal server error', code: 'INTERNAL_SERVER_ERROR' })
-      }
+      const getPublication = new GetPublication()
+      const result = await getPublication.execute({
+        userId: request.userId,
+        publicationId: request.params.id,
+      })
+      return reply.status(200).send(result)
     },
   })
 }

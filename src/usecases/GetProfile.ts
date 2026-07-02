@@ -1,3 +1,4 @@
+import { NotFoundError } from '../errors/index.ts'
 import { prisma } from '../lib/db.ts'
 
 interface InputDto {
@@ -15,9 +16,13 @@ interface OutputDto {
 
 export class GetProfile {
   async execute(dto: InputDto): Promise<OutputDto> {
-    const user = await prisma.user.findUniqueOrThrow({
+    const user = await prisma.user.findFirst({
       where: { id: dto.userId },
     })
+
+    if (!user) {
+      throw new NotFoundError('User not found')
+    }
 
     return {
       id: user.id,

@@ -1,3 +1,4 @@
+import type { Prisma } from '../generated/prisma/client.ts'
 import { prisma } from '../lib/db.ts'
 
 interface InputDto {
@@ -30,7 +31,7 @@ interface OutputDto {
 
 export class ListPublications {
   async execute(dto: InputDto): Promise<OutputDto> {
-    const where: Record<string, unknown> = { userId: dto.userId }
+    const where: Prisma.PublicationWhereInput = { userId: dto.userId }
     if (dto.isRead !== undefined) {
       where.isRead = dto.isRead
     }

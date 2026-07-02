@@ -37,7 +37,7 @@ export class SyncPublications {
         }
       }
 
-      await prisma.publication.create({
+      const pub = await prisma.publication.create({
         data: {
           userId: dto.userId,
           title: remote.title,
@@ -54,26 +54,20 @@ export class SyncPublications {
         })
 
         if (linkedCase) {
-          const pub = await prisma.publication.findFirst({
-            where: { userId: dto.userId, sourceId: remote.sourceId },
-          })
-
-          if (pub) {
-            await prisma.casePublication.upsert({
-              where: {
-                caseId_publicationId: {
-                  caseId: linkedCase.id,
-                  publicationId: pub.id,
-                },
-              },
-              create: {
+          await prisma.casePublication.upsert({
+            where: {
+              caseId_publicationId: {
                 caseId: linkedCase.id,
                 publicationId: pub.id,
-                isManualLink: false,
               },
-              update: {},
-            })
-          }
+            },
+            create: {
+              caseId: linkedCase.id,
+              publicationId: pub.id,
+              isManualLink: false,
+            },
+            update: {},
+          })
         }
       }
 
