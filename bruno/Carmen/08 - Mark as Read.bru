@@ -1,8 +1,11 @@
 meta {
   name: 08 - Mark as Read
-  method: PATCH
-  url: {{base_url}}/publications/{{pubId}}/status
+  type: http
   seq: 8
+}
+
+patch {
+  url: {{base_url}}/publications/{{pubId}}/status
 }
 
 headers {

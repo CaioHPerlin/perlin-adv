@@ -1,8 +1,11 @@
 meta {
   name: 10 - Link Publication to Case
-  method: POST
-  url: {{base_url}}/publications/{{pubId}}/link/{{caseId}}
+  type: http
   seq: 10
+}
+
+post {
+  url: {{base_url}}/publications/{{pubId}}/link/{{caseId}}
 }
 
 headers {

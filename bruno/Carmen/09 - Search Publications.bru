@@ -1,10 +1,17 @@
 meta {
   name: 09 - Search Publications
-  method: GET
-  url: {{base_url}}/publications/search?q=honor%C3%A1rios
+  type: http
   seq: 9
+}
+
+get {
+  url: {{base_url}}/publications/search
 }
 
 headers {
   Cookie: {{sessionToken}}
+}
+
+params:query {
+  q: honorários
 }

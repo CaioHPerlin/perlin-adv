@@ -1,8 +1,11 @@
 meta {
   name: 06 - Manual Sync
-  method: POST
-  url: {{base_url}}/sync
+  type: http
   seq: 6
+}
+
+post {
+  url: {{base_url}}/sync
 }
 
 headers {
