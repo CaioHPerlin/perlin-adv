@@ -28,5 +28,20 @@ export const auth = betterAuth({
     },
   },
   database: prismaAdapter(prisma, { provider: 'postgresql' }),
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          const { SyncPublications } = await import('../usecases/SyncPublications.ts')
+          try {
+            const sync = new SyncPublications()
+            await sync.execute({ userId: user.id })
+          } catch (error) {
+            console.error(`[Auth] Initial sync failed for user ${user.id}:`, error)
+          }
+        },
+      },
+    },
+  },
   plugins: [openAPI()],
 })
