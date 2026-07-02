@@ -3,7 +3,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { openAPI } from 'better-auth/plugins'
 
 import { prisma } from './db.ts'
-import { sendPasswordResetEmail } from './email.ts'
+import { sendPasswordResetEmail } from './email/index.ts'
 
 export const auth = betterAuth({
   trustedOrigins: ['http://localhost:3000'],

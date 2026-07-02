@@ -1,7 +1,7 @@
 import cron from 'node-cron'
 
 import { prisma } from '../lib/db.ts'
-import { sendSyncNotification } from '../lib/email.ts'
+import { sendSyncNotification } from '../lib/email/index.ts'
 import { SyncPublications } from '../usecases/SyncPublications.ts'
 
 export function startCronJobs() {
