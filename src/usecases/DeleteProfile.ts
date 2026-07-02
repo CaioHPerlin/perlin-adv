@@ -21,7 +21,7 @@ export class DeleteProfile {
     }
 
     return {
-      message: 'Profile and all associated data have been deleted',
+      message: 'Profile deleted',
     }
   }
 }

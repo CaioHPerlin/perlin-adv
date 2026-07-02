@@ -80,7 +80,12 @@ app.setErrorHandler((error, _request, reply) => {
   if (error instanceof UnauthorizedError) {
     return reply.status(401).send({ error: error.message, code: 'UNAUTHORIZED' })
   }
-  if (typeof error === 'object' && error !== null && 'code' in error && typeof (error as Record<string, unknown>).code === 'string') {
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    typeof (error as Record<string, unknown>).code === 'string'
+  ) {
     const code = (error as Record<string, unknown>).code as string
     if (code === 'P2002') {
       return reply.status(409).send({ error: 'Resource already exists', code: 'CONFLICT_ERROR' })
@@ -100,7 +105,6 @@ await app.register(syncRoutes, { prefix: '/sync' })
 await app.register(dashboardRoutes, { prefix: '/dashboard' })
 
 startCronJobs()
-
 app.route({
   method: ['GET', 'POST'],
   url: '/api/auth/*',

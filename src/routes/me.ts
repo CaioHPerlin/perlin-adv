@@ -32,7 +32,7 @@ export const meRoutes = async (app: FastifyInstance) => {
     url: '/',
     schema: {
       tags: ['Me'],
-      summary: 'Delete current user profile and all associated data',
+      summary: 'Delete current user profile',
       response: {
         200: MessageSchema,
         401: ErrorSchema,

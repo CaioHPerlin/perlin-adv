@@ -39,6 +39,8 @@ export class GetDashboard {
       }),
     ])
 
+    console.log({ unreadCount, totalCases, recentPublications })
+
     return {
       unreadCount,
       totalCases,

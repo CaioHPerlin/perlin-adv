@@ -1,0 +1,22 @@
+[
+  // /api/auth/sign-up/email
+  {
+    "name": "Carmen Maria Perlin",
+    "email": "caiohperlin@gmail.com",
+    "password": "senha-segura-123",
+    "oabNumber": "7242",
+    "oabUf": "MS"
+  },
+  // /api/auth/sign-in/email
+  {
+    "email": "caiohperlin@gmail.com",
+    "password": "senha-segura-123"
+  },
+  {
+    "caseNumber": "0007242-77.2026.8.12.0100",
+    "folderNumber": "001/2026",
+    "title": "Ação de Cobrança de Honorários",
+    "description": "Cobrança de honorários advocatícios contratuais",
+    "notes": "Sr. João Batista Silva, documentos ainda pendentes"
+  }
+]
