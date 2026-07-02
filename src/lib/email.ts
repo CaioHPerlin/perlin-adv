@@ -10,12 +10,40 @@ const transporter = nodemailer.createTransport({
   },
 })
 
+function isEmailConfigured(): boolean {
+  return !(!process.env.SMTP_HOST || process.env.SMTP_HOST === 'smtp.example.com')
+}
+
+export async function sendPasswordResetEmail(to: string, name: string, url: string): Promise<void> {
+  if (!isEmailConfigured()) return
+
+  try {
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM || `"Perlin Adv" <${process.env.SMTP_USER}>`,
+      to,
+      subject: 'Redefinição de senha — Perlin Adv',
+      html: `
+        <h2>Olá, ${name}!</h2>
+        <p>Recebemos uma solicitação de redefinição de senha para sua conta.</p>
+        <p>Clique no link abaixo para criar uma nova senha:</p>
+        <p><a href="${url}">${url}</a></p>
+        <p>Este link é válido por tempo limitado.</p>
+        <p>Se você não solicitou esta alteração, ignore este e-mail.</p>
+        <br/>
+        <p>Equipe Perlin Adv</p>
+      `,
+    })
+  } catch (error) {
+    console.error('Failed to send password reset email:', error)
+  }
+}
+
 export async function sendSyncNotification(
   to: string,
   name: string,
   newPublications: number
 ): Promise<void> {
-  if (!process.env.SMTP_HOST || process.env.SMTP_HOST === 'smtp.example.com') return
+  if (!isEmailConfigured()) return
 
   try {
     await transporter.sendMail({
