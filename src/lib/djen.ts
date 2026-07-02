@@ -45,15 +45,12 @@ export class DjenClient {
         break
       }
 
-      const response = await this.makeRequest(
-        `${this.baseUrl}/comunicacoes/representantes`,
-        {
-          oab: oabNumber,
-          uf: oabUf,
-          page,
-          size: 100,
-        }
-      )
+      const response = await this.makeRequest(`${this.baseUrl}/comunicacoes/representantes`, {
+        oab: oabNumber,
+        uf: oabUf,
+        page,
+        size: 100,
+      })
 
       if (!response) break
 
@@ -86,10 +83,11 @@ export class DjenClient {
     while (page < totalPages) {
       if (this.rateLimitRemaining <= 0) break
 
-      const response = await this.makeRequest(
-        `${this.baseUrl}/comunicacoes`,
-        { numeroProcesso: caseNumber, page, size: 100 }
-      )
+      const response = await this.makeRequest(`${this.baseUrl}/comunicacoes`, {
+        numeroProcesso: caseNumber,
+        page,
+        size: 100,
+      })
 
       if (!response) break
 
@@ -114,7 +112,32 @@ export class DjenClient {
     return publications
   }
 
-  private async makeRequest(url: string, params: Record<string, unknown>, attempt: number = 1): Promise<Response | null> {
+  private getRetryDelay(attempt: number): number {
+    return Math.pow(2, attempt - 1) * 1000
+  }
+
+  private canRetry(attempt: number, status?: number): boolean {
+    if (attempt >= MAX_RETRIES) return false
+    if (status !== undefined && !RETRYABLE_STATUSES.has(status)) return false
+    return true
+  }
+
+  private async retry(
+    url: string,
+    params: Record<string, unknown>,
+    attempt: number
+  ): Promise<Response | null> {
+    const delay = this.getRetryDelay(attempt)
+    console.log(`[DjenClient] Retrying in ${delay}ms...`)
+    await sleep(delay)
+    return this.makeRequest(url, params, attempt + 1)
+  }
+
+  private async makeRequest(
+    url: string,
+    params: Record<string, unknown>,
+    attempt: number = 1
+  ): Promise<Response | null> {
     try {
       const searchParams = new URLSearchParams()
       for (const [key, value] of Object.entries(params)) {
@@ -137,29 +160,21 @@ export class DjenClient {
       }
 
       if (!response.ok) {
-        console.error(`DJEN API error: ${response.status} ${response.statusText} (attempt ${attempt}/${MAX_RETRIES})`)
-
-        if (RETRYABLE_STATUSES.has(response.status) && attempt < MAX_RETRIES) {
-          const delay = Math.pow(2, attempt - 1) * 1000
-          console.log(`[DjenClient] Retrying in ${delay}ms...`)
-          await sleep(delay)
-          return this.makeRequest(url, params, attempt + 1)
+        console.error(
+          `DJEN API error: ${response.status} ${response.statusText} (attempt ${attempt}/${MAX_RETRIES})`
+        )
+        if (this.canRetry(attempt, response.status)) {
+          return this.retry(url, params, attempt)
         }
-
         return null
       }
 
       return response
     } catch (error) {
       console.error(`DJEN API request failed: ${error} (attempt ${attempt}/${MAX_RETRIES})`)
-
-      if (attempt < MAX_RETRIES) {
-        const delay = Math.pow(2, attempt - 1) * 1000
-        console.log(`[DjenClient] Retrying in ${delay}ms...`)
-        await sleep(delay)
-        return this.makeRequest(url, params, attempt + 1)
+      if (this.canRetry(attempt)) {
+        return this.retry(url, params, attempt)
       }
-
       return null
     }
   }
