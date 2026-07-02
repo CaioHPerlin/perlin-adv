@@ -1,0 +1,27 @@
+meta {
+  name: 02 - Register
+  method: POST
+  url: {{base_url}}/api/auth/sign-up/email
+  seq: 2
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "{{name}}",
+    "email": "{{email}}",
+    "password": "{{password}}",
+    "oabNumber": "{{oab_number}}",
+    "oabUf": "{{oab_uf}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("userId", res.body.user.id);
+    bru.setVar("userToken", res.body.token);
+  }
+}

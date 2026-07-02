@@ -1,0 +1,16 @@
+meta {
+  name: 07 - List Publications
+  method: GET
+  url: {{base_url}}/publications?page=1&limit=5
+  seq: 7
+}
+
+headers {
+  Cookie: {{sessionToken}}
+}
+
+script:post-response {
+  if (res.status === 200 && res.body.publications.length > 0) {
+    bru.setVar("pubId", res.body.publications[0].id);
+  }
+}

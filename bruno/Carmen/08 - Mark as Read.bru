@@ -1,0 +1,17 @@
+meta {
+  name: 08 - Mark as Read
+  method: PATCH
+  url: {{base_url}}/publications/{{pubId}}/status
+  seq: 8
+}
+
+headers {
+  Content-Type: application/json
+  Cookie: {{sessionToken}}
+}
+
+body:json {
+  {
+    "isRead": true
+  }
+}

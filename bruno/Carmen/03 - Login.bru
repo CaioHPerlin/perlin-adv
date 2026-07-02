@@ -1,0 +1,23 @@
+meta {
+  name: 03 - Login
+  method: POST
+  url: {{base_url}}/api/auth/sign-in/email
+  seq: 3
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "{{email}}",
+    "password": "{{password}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("sessionToken", res.body.token);
+  }
+}

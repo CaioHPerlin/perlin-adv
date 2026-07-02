@@ -1,0 +1,27 @@
+meta {
+  name: 05 - Create Case
+  method: POST
+  url: {{base_url}}/cases
+  seq: 5
+}
+
+headers {
+  Content-Type: application/json
+  Cookie: {{sessionToken}}
+}
+
+body:json {
+  {
+    "caseNumber": "0007242-77.2026.8.12.0100",
+    "folderNumber": "001/2026",
+    "title": "Ação de Cobrança de Honorários",
+    "description": "Cobrança de honorários advocatícios contratuais",
+    "notes": "Cliente: João Batista Silva"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("caseId", res.body.id);
+  }
+}

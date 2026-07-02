@@ -1,0 +1,17 @@
+meta {
+  name: 06 - Manual Sync
+  method: POST
+  url: {{base_url}}/sync
+  seq: 6
+}
+
+headers {
+  Content-Type: application/json
+  Cookie: {{sessionToken}}
+}
+
+script:post-response {
+  if (res.status === 200 && res.body.newPublications > 0) {
+    bru.setVar("lastSyncCount", res.body.newPublications);
+  }
+}
