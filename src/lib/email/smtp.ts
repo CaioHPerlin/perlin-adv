@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
 
-import type { EmailSender } from './sender.ts'
+import type { EmailSender } from './email-sender.ts'
 
 export class SmtpEmailSender implements EmailSender {
   private transporter: nodemailer.Transporter

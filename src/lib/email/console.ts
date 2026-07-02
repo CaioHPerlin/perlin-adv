@@ -1,4 +1,4 @@
-import type { EmailSender } from './sender.ts'
+import type { EmailSender } from './email-sender.ts'
 
 function print(to: string, subject: string, html: string): void {
   console.log()

@@ -1,25 +1,15 @@
 import { ConsoleEmailSender } from './console.ts'
-import type { EmailSender } from './sender.ts'
+import type { EmailSender } from './email-sender.ts'
 import { SmtpEmailSender } from './smtp.ts'
 
-class NoopEmailSender implements EmailSender {
-  async sendPasswordResetEmail(): Promise<void> {}
-  async sendSyncNotification(): Promise<void> {}
-}
-
 function createEmailSender(): EmailSender {
-  if (process.env.CONSOLE_MODE === 'true') {
-    console.log('[Email] Console mode — emails will be printed to stdout')
-    return new ConsoleEmailSender()
-  }
-
   if (process.env.SMTP_HOST) {
     console.log('[Email] SMTP configured — using', process.env.SMTP_HOST)
     return new SmtpEmailSender()
   }
 
-  console.warn('[Email] No SMTP configured — emails will be silently skipped')
-  return new NoopEmailSender()
+  console.log('[Email] Console mode — emails will be printed to stdout')
+  return new ConsoleEmailSender()
 }
 
 const emailSender = createEmailSender()
