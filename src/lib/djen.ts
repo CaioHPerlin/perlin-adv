@@ -45,6 +45,7 @@ interface DjenApiResponse {
 }
 
 const MAX_RETRIES = 3
+const ITEMS_PER_PAGE = 100
 const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504])
 
 function sleep(ms: number): Promise<void> {
@@ -61,7 +62,7 @@ export class DjenClient {
 
   async fetchPublicationsByOab(oabNumber: string, oabUf: string): Promise<DjenPublication[]> {
     const publications: DjenPublication[] = []
-    let pagina = 0
+    let pagina = 1
 
     while (true) {
       if (this.rateLimitRemaining <= 0) break
@@ -69,7 +70,7 @@ export class DjenClient {
       const response = await this.makeRequest(`${this.baseUrl}/comunicacao`, {
         numeroOab: oabNumber,
         ufOab: oabUf,
-        itensPorPagina: 100,
+        itensPorPagina: ITEMS_PER_PAGE,
         pagina,
       })
 
@@ -78,7 +79,7 @@ export class DjenClient {
       const data = await this.parseResponse(response)
       if (!data || !data.items) break
 
-      const totalPages = Math.ceil(data.count / 100)
+      const totalPages = Math.ceil(data.count / ITEMS_PER_PAGE)
 
       for (const item of data.items) {
         publications.push({
@@ -91,7 +92,7 @@ export class DjenClient {
       }
 
       pagina++
-      if (pagina >= totalPages) break
+      if (pagina > totalPages) break
     }
 
     return publications
@@ -99,14 +100,14 @@ export class DjenClient {
 
   async fetchPublicationsByCaseNumber(caseNumber: string): Promise<DjenPublication[]> {
     const publications: DjenPublication[] = []
-    let pagina = 0
+    let pagina = 1
 
     while (true) {
       if (this.rateLimitRemaining <= 0) break
 
       const response = await this.makeRequest(`${this.baseUrl}/comunicacao`, {
         numeroProcesso: caseNumber,
-        itensPorPagina: 100,
+        itensPorPagina: ITEMS_PER_PAGE,
         pagina,
       })
 
@@ -115,7 +116,7 @@ export class DjenClient {
       const data = await this.parseResponse(response)
       if (!data || !data.items) break
 
-      const totalPages = Math.ceil(data.count / 100)
+      const totalPages = Math.ceil(data.count / ITEMS_PER_PAGE)
 
       for (const item of data.items) {
         publications.push({
@@ -128,7 +129,7 @@ export class DjenClient {
       }
 
       pagina++
-      if (pagina >= totalPages) break
+      if (pagina > totalPages) break
     }
 
     return publications

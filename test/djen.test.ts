@@ -4,6 +4,80 @@ import test from 'node:test'
 import { DjenClient } from '../src/lib/djen.ts'
 import { SyncPublications } from '../src/usecases/SyncPublications.ts'
 
+const TOTAL_ITEMS = 2666
+const ITEMS_PER_PAGE = 100
+const TOTAL_PAGES = Math.ceil(TOTAL_ITEMS / ITEMS_PER_PAGE)
+
+function createPaginationFetch(requestedPages: number[]): typeof fetch {
+  return async (input) => {
+    const requestUrl =
+      typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
+    const page = Number(new URL(requestUrl).searchParams.get('pagina'))
+    requestedPages.push(page)
+
+    return new Response(
+      JSON.stringify({
+        status: 'success',
+        message: '',
+        count: TOTAL_ITEMS,
+        items: [
+          {
+            id: page,
+            tipoComunicacao: 'Intimação',
+            texto: `Comunicação da página ${page}`,
+            data_disponibilizacao: '2026-08-01T00:00:00.000Z',
+          },
+        ],
+      }),
+      { status: 200 }
+    )
+  }
+}
+
+async function assertPagination(
+  fetchPublications: (client: DjenClient) => Promise<{ sourceId: string }[]>
+): Promise<void> {
+  const originalFetch = globalThis.fetch
+  const originalDjenApiUrl = process.env.DJEN_API_URL
+  const requestedPages: number[] = []
+
+  process.env.DJEN_API_URL = 'https://djen.test/api/v1'
+  globalThis.fetch = createPaginationFetch(requestedPages)
+
+  try {
+    const publications = await fetchPublications(new DjenClient())
+    const expectedPages = Array.from({ length: TOTAL_PAGES }, (_, index) => index + 1)
+
+    assert.deepEqual(requestedPages, expectedPages)
+    assert.ok(requestedPages.includes(2))
+    assert.ok(requestedPages.includes(TOTAL_PAGES - 1))
+    assert.ok(!requestedPages.includes(0))
+    assert.ok(!requestedPages.includes(TOTAL_PAGES + 1))
+    assert.deepEqual(
+      publications.map((publication) => publication.sourceId),
+      expectedPages.map(String)
+    )
+  } finally {
+    globalThis.fetch = originalFetch
+
+    if (originalDjenApiUrl === undefined) {
+      delete process.env.DJEN_API_URL
+    } else {
+      process.env.DJEN_API_URL = originalDjenApiUrl
+    }
+  }
+}
+
+test('fetchPublicationsByOab requests every page from 1 through the last page', async () => {
+  await assertPagination((client) => client.fetchPublicationsByOab('12345', 'SP'))
+})
+
+test('fetchPublicationsByCaseNumber requests every page from 1 through the last page', async () => {
+  await assertPagination((client) =>
+    client.fetchPublicationsByCaseNumber('0000000-00.0000.0.00.0000')
+  )
+})
+
 test('imports communications with the same numeroComunicacao once per external id', async () => {
   const originalFetch = globalThis.fetch
   const originalDjenApiUrl = process.env.DJEN_API_URL
