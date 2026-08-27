@@ -11,23 +11,32 @@ interface OutputDto {
 }
 
 export class SyncPublications {
+  constructor(
+    private readonly database = prisma,
+    private readonly djen: Pick<DjenClient, 'fetchPublicationsByOab'> = new DjenClient()
+  ) {}
+
   async execute(dto: InputDto): Promise<OutputDto> {
-    const user = await prisma.user.findUniqueOrThrow({
+    const user = await this.database.user.findUniqueOrThrow({
       where: { id: dto.userId },
     })
 
-    const djen = new DjenClient()
-    const remotePublications = await djen.fetchPublicationsByOab(user.oabNumber, user.oabUf)
+    const remotePublications = await this.djen.fetchPublicationsByOab(user.oabNumber, user.oabUf)
 
     let newPublications = 0
 
     for (const remote of remotePublications) {
-      const created = await prisma.$transaction(async (tx) => {
+      const created = await this.database.$transaction(async (tx) => {
         const existing = await tx.publication.findFirst({
           where: { userId: dto.userId, sourceId: remote.sourceId },
         })
 
         if (existing) return null
+
+        // Older rows kept numeroComunicacao in sourceId. Since that field is not
+        // unique and the external API id was not persisted, there is no reliable
+        // way to associate a legacy row with a fetched communication. Do not use
+        // content/date heuristics here: they could suppress a distinct publication.
 
         let extractedCaseNumber = remote.extractedCaseNumber
 

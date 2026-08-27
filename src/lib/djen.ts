@@ -7,6 +7,7 @@ export interface DjenPublication {
 }
 
 interface DjenApiItem {
+  // The API's stable, unique identifier for a communication.
   id: number
   data_disponibilizacao: string
   siglaTribunal: string
@@ -84,7 +85,7 @@ export class DjenClient {
           title: item.tipoComunicacao || item.nomeClasse || 'Comunicação',
           content: item.texto || '',
           publishedAt: item.data_disponibilizacao || new Date().toISOString(),
-          sourceId: String(item.numeroComunicacao || `${oabNumber}-${pagina}-${publications.length}`),
+          sourceId: String(item.id),
           extractedCaseNumber: item.numero_processo || undefined,
         })
       }
@@ -121,7 +122,7 @@ export class DjenClient {
           title: item.tipoComunicacao || item.nomeClasse || 'Comunicação',
           content: item.texto || '',
           publishedAt: item.data_disponibilizacao || new Date().toISOString(),
-          sourceId: String(item.numeroComunicacao || `${caseNumber}-${pagina}-${publications.length}`),
+          sourceId: String(item.id),
           extractedCaseNumber: item.numero_processo || undefined,
         })
       }
@@ -135,7 +136,7 @@ export class DjenClient {
 
   private async parseResponse(response: Response): Promise<DjenApiResponse | null> {
     try {
-      return await response.json() as DjenApiResponse
+      return (await response.json()) as DjenApiResponse
     } catch {
       console.error('[DjenClient] Failed to parse DJEN API response as JSON')
       return null
