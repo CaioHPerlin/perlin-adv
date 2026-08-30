@@ -4,6 +4,81 @@ Sistema web para monitoramento de publicações do Diário da Justiça Eletrôni
 
 ---
 
+## Como executar localmente
+
+### Pré-requisitos
+
+- Node.js em uma versão LTS compatível com o projeto;
+- [pnpm](https://pnpm.io/);
+- PostgreSQL em execução.
+
+### 1. Instale as dependências
+
+```bash
+pnpm install
+```
+
+### 2. Configure as variáveis de ambiente
+
+Crie o arquivo `.env` a partir do exemplo:
+
+```bash
+cp .env.example .env
+```
+
+Preencha ao menos estas variáveis:
+
+```dotenv
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/perlin_adv?schema=public"
+BETTER_AUTH_SECRET="gere-um-segredo-aleatorio-longo"
+BETTER_AUTH_URL="http://localhost:8080"
+PORT=8080
+```
+
+As configurações `SMTP_*` são opcionais em desenvolvimento; sem `SMTP_HOST`, os e-mails são registrados no console. A integração com o DJEN usa a URL pública por padrão. Quando necessário, `DJEN_API_URL` e `DJEN_API_KEY` também podem ser definidos no `.env`.
+
+### 3. Crie o banco e aplique as migrações
+
+Crie previamente no PostgreSQL o banco indicado em `DATABASE_URL` e execute:
+
+```bash
+pnpm prisma generate
+pnpm prisma migrate dev
+```
+
+Para aplicar as migrações em produção, use:
+
+```bash
+pnpm prisma migrate deploy
+```
+
+### 4. Inicie a API
+
+```bash
+pnpm dev
+```
+
+A API estará disponível em `http://localhost:8080` (ou na porta configurada). Use os seguintes endereços para conferir a execução:
+
+- Health check: `GET http://localhost:8080/`
+- Documentação interativa: `http://localhost:8080/docs`
+- Especificação OpenAPI: `http://localhost:8080/swagger.json`
+
+As requisições de exemplo para o [Bruno](https://www.usebruno.com/) estão no diretório `bruno/`.
+
+### Validação
+
+```bash
+pnpm test
+pnpm typecheck
+pnpm lint
+pnpm format
+```
+
+O último comando formata os arquivos em `src/` e pode alterar o worktree.
+
+---
+
 ## Requisitos Funcionais
 
 | ID    | Descrição                                                                                                                                                                                                                                      |
